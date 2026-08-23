@@ -109,6 +109,8 @@
                                 ToolTip="On-stream counters with +/- hotkeys"/>
                         <Button Style="{StaticResource FfMenuButton}" Content="PANELS" Click="TextPanels_Click"
                                 ToolTip="Custom text overlays for OBS"/>
+                        <Button Style="{StaticResource FfMenuButton}" Content="WHEEL" Click="Wheel_Click"
+                                ToolTip="Spin a challenge wheel — results can show on the overlay"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <Button Style="{StaticResource FfMenuButton}" Content="VOICE LAB" Click="VoiceLab_Click"

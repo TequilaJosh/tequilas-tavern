@@ -283,6 +283,41 @@ namespace GameTracker
             _settingsWindow.Show();
         }
 
+        // Standalone challenge wheel. Items persist as a reserved wheel preset so they
+        // survive restarts; rolled challenges go straight to the overlay.
+        private const string TavernWheelPreset = "Tavern Wheel";
+        private Views.WheelWindow? _wheelWindow;
+        private void Wheel_Click(object sender, RoutedEventArgs e)
+        {
+            if (_wheelWindow != null) { _wheelWindow.Activate(); return; }
+            var presets = Services.SettingsService.LoadWheelPresets();
+            var saved = presets.Find(p => p.Name == TavernWheelPreset);
+            var results = new List<string>();
+
+            void SaveItems(List<string> items)
+            {
+                var all = Services.SettingsService.LoadWheelPresets();
+                var mine = all.Find(p => p.Name == TavernWheelPreset);
+                if (mine == null) { mine = new WheelPreset { Name = TavernWheelPreset }; all.Add(mine); }
+                mine.Items = new List<string>(items);
+                Services.SettingsService.SaveWheelPresets(all);
+            }
+
+            _wheelWindow = new Views.WheelWindow("Challenge Wheel",
+                saved?.Items ?? new List<string>(), editable: true,
+                onItemsChanged: SaveItems,
+                onChosen: null, chooseButtonText: null,
+                initialResults: results,
+                onResultsChanged: r =>
+                {
+                    Services.OverlayService.SetChallenges(r);
+                    Services.OverlayService.Update(null);
+                })
+            { Owner = this };
+            _wheelWindow.Closed += (_, _) => _wheelWindow = null;
+            _wheelWindow.Show();
+        }
+
         private Views.HelpWindow? _helpWindow;
         private void Help_Click(object sender, RoutedEventArgs e)
         {
