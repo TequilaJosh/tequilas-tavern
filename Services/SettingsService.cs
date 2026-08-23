@@ -205,17 +205,61 @@ namespace GameTracker.Services
         public static void RunMigrations()
         {
             var s = LoadAll();
-            if (s.MigrationRev >= 1) return;
+            if (s.MigrationRev >= 3) return;
 
-            // Rev 1: points became on-by-default at 25 per 5 min. Flip users still on the
-            // old shipped default (off @ 10) — anyone who customized keeps their numbers.
-            s.Features ??= new ChatFeatureSettings();
-            if (!s.Features.PointsEnabled)
+            if (s.MigrationRev < 1)
             {
-                s.Features.PointsEnabled = true;
-                if (s.Features.PointsPerInterval == 10) s.Features.PointsPerInterval = 25;
+                // Rev 1: points became on-by-default at 25 per 5 min. Flip users still on the
+                // old shipped default (off @ 10) — anyone who customized keeps their numbers.
+                s.Features ??= new ChatFeatureSettings();
+                if (!s.Features.PointsEnabled)
+                {
+                    s.Features.PointsEnabled = true;
+                    if (s.Features.PointsPerInterval == 10) s.Features.PointsPerInterval = 25;
+                }
             }
-            s.MigrationRev = 1;
+
+            // Rev 2: TTS max spoken length default went 200 -> 500 (long messages were
+            // audibly cutting off). Only bump users still on the old shipped default.
+            s.Tts ??= new ChatTtsSettings();
+            if (s.MigrationRev < 2 && s.Tts.MaxChars == 200) s.Tts.MaxChars = 500;
+
+            // Rev 3 (Tavern only): borrow still-unset essentials from an existing Game
+            // Hunter install so chat "just works" — the TTS output device (usually the
+            // virtual cable feeding Discord), chat connections, and the bot link.
+            if (s.MigrationRev < 3)
+            {
+                try
+                {
+                    var ghFile = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "LazerGuanas Game Hunter", "settings.json");
+                    if (File.Exists(ghFile))
+                    {
+                        var gh = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(ghFile), LoadSettings);
+                        if (gh != null)
+                        {
+                            if (string.IsNullOrEmpty(s.Tts.OutputDevice) && !string.IsNullOrEmpty(gh.Tts?.OutputDevice))
+                                s.Tts.OutputDevice = gh.Tts!.OutputDevice;
+
+                            s.Chat ??= new ChatSettings();
+                            if (string.IsNullOrEmpty(s.Chat.TwitchChannel)) s.Chat.TwitchChannel = gh.Chat?.TwitchChannel ?? string.Empty;
+                            if (string.IsNullOrEmpty(s.Chat.SsnSession)) s.Chat.SsnSession = gh.Chat?.SsnSession ?? string.Empty;
+                            if (string.IsNullOrEmpty(s.Chat.RestreamToken)) s.Chat.RestreamToken = gh.Chat?.RestreamToken ?? string.Empty;
+
+                            s.Features ??= new ChatFeatureSettings();
+                            if (string.IsNullOrEmpty(s.Features.BotIngestUrl) && !string.IsNullOrEmpty(gh.Features?.BotIngestUrl))
+                            {
+                                s.Features.BotIngestUrl = gh.Features!.BotIngestUrl;
+                                s.Features.BotIngestToken = gh.Features!.BotIngestToken;
+                            }
+                        }
+                    }
+                }
+                catch { /* best-effort import */ }
+            }
+
+            s.MigrationRev = 3;
             SaveAll(s);
         }
 
