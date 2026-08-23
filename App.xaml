@@ -28,43 +28,9 @@
         <SolidColorBrush x:Key="ThemeSurface2"   Color="#1a2a6e"/>
         <SolidColorBrush x:Key="ThemeBorder"     Color="#2438a0"/>
 
-        <!-- Snake-scale tile pattern: staggered fish-scale arcs -->
-        <DrawingBrush x:Key="ScaleBrush" TileMode="Tile"
-                      Viewport="0,0,28,28" ViewportUnits="Absolute" Stretch="None">
-            <DrawingBrush.Drawing>
-                <DrawingGroup>
-                    <GeometryDrawing Brush="#080e34">
-                        <GeometryDrawing.Geometry>
-                            <RectangleGeometry Rect="0,0,28,28"/>
-                        </GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <GeometryDrawing>
-                        <GeometryDrawing.Pen>
-                            <Pen Brush="#16226e" Thickness="1"/>
-                        </GeometryDrawing.Pen>
-                        <GeometryDrawing.Geometry>
-                            <PathGeometry>
-                                <PathFigure StartPoint="0,8">
-                                    <ArcSegment Point="14,8" Size="7,7" SweepDirection="Clockwise"/>
-                                </PathFigure>
-                                <PathFigure StartPoint="14,8">
-                                    <ArcSegment Point="28,8" Size="7,7" SweepDirection="Clockwise"/>
-                                </PathFigure>
-                                <PathFigure StartPoint="-7,22">
-                                    <ArcSegment Point="7,22" Size="7,7" SweepDirection="Clockwise"/>
-                                </PathFigure>
-                                <PathFigure StartPoint="7,22">
-                                    <ArcSegment Point="21,22" Size="7,7" SweepDirection="Clockwise"/>
-                                </PathFigure>
-                                <PathFigure StartPoint="21,22">
-                                    <ArcSegment Point="35,22" Size="7,7" SweepDirection="Clockwise"/>
-                                </PathFigure>
-                            </PathGeometry>
-                        </GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                </DrawingGroup>
-            </DrawingBrush.Drawing>
-        </DrawingBrush>
+        <!-- FF1 look: windows are a flat menu-blue (key kept for compatibility;
+             ThemeService re-points it at the theme's background colour). -->
+        <SolidColorBrush x:Key="ScaleBrush" Color="#080e34"/>
 
         <!-- Custom title bar controls -->
         <Style x:Key="WindowControlButton" TargetType="Button">

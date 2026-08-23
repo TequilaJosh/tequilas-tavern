@@ -16,7 +16,8 @@
                             UseAeroCaptionButtons="False"/>
     </shell:WindowChrome.WindowChrome>
 
-    <Border BorderBrush="{DynamicResource ThemeAccentDeep}" BorderThickness="1">
+    <Border BorderBrush="#FFFFFF" BorderThickness="3" Padding="2">
+    <Border BorderBrush="#8090E8" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="32"/>
@@ -219,5 +220,6 @@
                 </Button>
             </Grid>
         </Grid>
+    </Border>
     </Border>
 </Window>

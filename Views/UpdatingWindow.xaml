@@ -7,7 +7,8 @@
         WindowStyle="None" ResizeMode="NoResize"
         Topmost="True" ShowInTaskbar="False"
         Background="{DynamicResource ScaleBrush}">
-    <Border BorderBrush="{DynamicResource ThemeAccentDeep}" BorderThickness="2">
+    <Border BorderBrush="#FFFFFF" BorderThickness="3" Padding="2">
+    <Border BorderBrush="#8090E8" BorderThickness="1">
         <StackPanel Margin="22,20">
             <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                 <Image Source="/tt-chat.ico" Width="24" Height="24" Margin="0,0,10,0"
@@ -26,5 +27,6 @@
             <TextBlock Text="The app will reopen automatically when it's done."
                        Foreground="#7a9070" FontSize="11" Margin="0,4,0,0"/>
         </StackPanel>
+    </Border>
     </Border>
 </Window>

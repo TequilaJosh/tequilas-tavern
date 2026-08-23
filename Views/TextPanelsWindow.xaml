@@ -60,7 +60,8 @@
         </Style>
     </Window.Resources>
 
-    <Border BorderBrush="{DynamicResource ThemeAccentDeep}" BorderThickness="1">
+    <Border BorderBrush="#FFFFFF" BorderThickness="3" Padding="2">
+    <Border BorderBrush="#8090E8" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="32"/>
@@ -385,5 +386,6 @@
                 </ItemsControl>
             </ScrollViewer>
         </Grid>
+    </Border>
     </Border>
 </Window>

@@ -37,7 +37,8 @@ namespace GameTracker.Services
             res["ThemeSurface2"] = Frozen(Extrapolate(baseC, tileC, 1.6));
             res["ThemeBorder"] = Frozen(Extrapolate(baseC, tileC, 2.6));
 
-            res["ScaleBrush"] = BuildScaleBrush(Current.BgBase, Current.BgTile);
+            // FF1 look: windows are a flat menu-blue, no scale tile pattern.
+            res["ScaleBrush"] = Frozen(baseC);
 
             if (save) SettingsService.SaveTheme(Current);
         }
