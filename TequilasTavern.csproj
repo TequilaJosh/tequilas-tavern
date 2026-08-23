@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>TequilasTavern</AssemblyName>
+    <RootNamespace>GameTracker</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>iguana-eye.ico</ApplicationIcon>
+    <Product>Tequilas' Tavern</Product>
+    <AssemblyTitle>Tequilas' Tavern</AssemblyTitle>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <!-- The Node.js Discord bot lives alongside the app but is not part of the .NET build. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);discord-bot\**</DefaultItemExcludes>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <!-- Codec-independent sound-alert playback (wav/mp3/wma/m4a/aac/flac/aiff via
+         Media Foundation, plus Ogg Vorbis via NAudio.Vorbis/NVorbis). -->
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
+    <!-- Real-time voice morphing + extra TTS voice effects (pitch vocoder, robot, whisper…). -->
+    <PackageReference Include="NWaves" Version="0.9.6" />
+    <!-- Text-to-speech uses the Windows OneCore engine (Windows.Media.SpeechSynthesis),
+         available via the Windows 10 target above; playback goes through NAudio. -->
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="iguana-eye.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The live OBS overlay, served by OverlayServer from inside the exe. -->
+    <EmbeddedResource Include="overlay\LiveOverlay.html" />
+    <!-- Custom text-panel overlays, served at /panel/1..5. -->
+    <EmbeddedResource Include="overlay\PanelOverlay.html" />
+    <!-- Transparent effects overlay (video/image redeems), served at /effects. -->
+    <EmbeddedResource Include="overlay\EffectsOverlay.html" />
+    <!-- Activity ticker banner (latest sub/gift/follow), served at /ticker. -->
+    <EmbeddedResource Include="overlay\TickerOverlay.html" />
+    <!-- How-to guide screenshots (regenerate with the capture-docs startup flag). -->
+    <Resource Include="Docs\Screens\*.png" />
+    <!-- Bundled bonus font, served at /font/saturn.ttf as "MR. Saturn". -->
+    <EmbeddedResource Include="overlay\fonts\SaturnBoingNew.ttf" />
+    <!-- Chicken "bawk" used to censor bad words in TTS. -->
+    <EmbeddedResource Include="Assets\chicken.wav" />
+  </ItemGroup>
+</Project>

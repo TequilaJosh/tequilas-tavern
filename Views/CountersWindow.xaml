@@ -1,0 +1,206 @@
+<Window x:Class="GameTracker.Views.CountersWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="Counters"
+        Width="720" Height="460"
+        MinWidth="620" MinHeight="300"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None" ResizeMode="CanResize"
+        Icon="/iguana-eye.ico"
+        Background="{DynamicResource ScaleBrush}">
+
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="32" ResizeBorderThickness="6"
+                            GlassFrameThickness="0" CornerRadius="0"
+                            UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="B2V"/>
+        <Style x:Key="In" TargetType="TextBox">
+            <Setter Property="Background" Value="{DynamicResource ThemeSurface}"/>
+            <Setter Property="Foreground" Value="#e8e0c4"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource ThemeAccent}"/>
+            <Setter Property="Padding" Value="5,3"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="Btn" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource ThemeSurface2}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeAccent}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="9,4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="3"
+                                Padding="{TemplateBinding Padding}"
+                                BorderBrush="{DynamicResource ThemeAccentDeep}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource ThemeAccentDeep}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ThemeBg}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border BorderBrush="{DynamicResource ThemeAccentDeep}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="{DynamicResource ThemeBg}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="0,0,0,1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
+                        <Image Source="/iguana-eye.ico" Width="16" Height="16" Margin="0,0,8,0"
+                               VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="COUNTERS" Foreground="{DynamicResource ThemeAccent}" FontSize="11"
+                                   FontWeight="Bold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="&#x2715;" Click="Close_Click"
+                            Style="{StaticResource WindowCloseButton}" Height="32"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True"/>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" Margin="14,10,14,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Foreground="#7a9070" FontSize="11" TextWrapping="Wrap"
+                               Text="On-stream tallies (deaths, catchphrases, anything). Each counter keeps a SEPARATE count per game and only shows for the game you're playing. Pick its games (multi-select) and set +/- hotkeys per counter below."/>
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <TextBlock Text="Editing counts for:" Foreground="#a8c488" FontSize="11" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <ComboBox x:Name="EditGameCombo" Width="190" VerticalAlignment="Center"
+                                  ItemsSource="{Binding EditingGames, RelativeSource={RelativeSource AncestorType=Window}}"
+                                  SelectionChanged="EditGame_Changed"
+                                  ToolTip="Which game's counts the value/±1 buttons here edit (hotkeys always bump the game you're streaming)"/>
+                    </StackPanel>
+                    <TextBlock x:Name="CaptureStatus" Foreground="{DynamicResource ThemeAccent}" FontSize="11"
+                               FontWeight="Bold" Margin="0,4,0,0"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="+ Add counter" Click="Add_Click"
+                        Style="{StaticResource Btn}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+            </Grid>
+
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Padding="14,0,14,12">
+                <ItemsControl x:Name="CounterList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{DynamicResource ThemeSurface}" BorderBrush="{DynamicResource ThemeBorder}"
+                                    BorderThickness="1" CornerRadius="5" Padding="8" Margin="0,0,0,7">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding Show}" VerticalAlignment="Center"
+                                                  Margin="0,0,6,0" ToolTip="Show on the overlay"/>
+                                        <TextBox Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource In}" Margin="0,0,6,0" ToolTip="Counter name"/>
+                                        <Button Grid.Column="2" Content="&#8722;1" Tag="{Binding}" Click="Minus_Click"
+                                                Style="{StaticResource Btn}" Margin="0,0,3,0"/>
+                                        <TextBox Grid.Column="3" Width="56" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource In}" Margin="0,0,3,0" TextAlignment="Center" ToolTip="Current value"/>
+                                        <Button Grid.Column="4" Content="+1" Tag="{Binding}" Click="Plus_Click"
+                                                Style="{StaticResource Btn}" Margin="0,0,3,0"/>
+                                        <Button Grid.Column="5" Content="&#8635;" Tag="{Binding}" Click="Reset_Click"
+                                                Style="{StaticResource Btn}" Margin="0,0,8,0" ToolTip="Reset to 0"/>
+                                        <Button Grid.Column="6" Content="{Binding GamesSummary}" Tag="{Binding}" Click="Games_Click"
+                                                Style="{StaticResource Btn}" Width="150" Margin="0,0,8,0"
+                                                ToolTip="Which games this counter shows for (multi-select; default = all games)"/>
+                                        <Button Grid.Column="7" Tag="{Binding}" Click="PickColor_Click" Cursor="Hand"
+                                                Margin="0,0,8,0" ToolTip="Value color">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Width="18" Height="18" CornerRadius="3"
+                                                            Background="{Binding ColorBrush}"
+                                                            BorderBrush="{DynamicResource ThemeAccentDeep}" BorderThickness="1"/>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                        <Button Grid.Column="8" Content="&#x2715;" Tag="{Binding}" Click="Remove_Click"
+                                                Style="{StaticResource Btn}" ToolTip="Remove counter"/>
+                                    </Grid>
+
+                                    <!-- +/- hotkeys -->
+                                    <StackPanel Orientation="Horizontal" Margin="26,7,0,0">
+                                        <TextBlock Text="&#9000; Hotkeys:" Foreground="#7a9070" FontSize="11"
+                                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <Button Content="{Binding IncHotkeyDisplay}" Tag="{Binding}" Click="IncHotkey_Click"
+                                                Style="{StaticResource Btn}" Margin="0,0,2,0" MinWidth="96"
+                                                ToolTip="Set the global +1 hotkey"/>
+                                        <Button Content="&#x2715;" Tag="{Binding}" Click="ClearIncHotkey_Click"
+                                                Style="{StaticResource Btn}" Margin="0,0,14,0" ToolTip="Clear +1 hotkey"/>
+                                        <Button Content="{Binding DecHotkeyDisplay}" Tag="{Binding}" Click="DecHotkey_Click"
+                                                Style="{StaticResource Btn}" Margin="0,0,2,0" MinWidth="96"
+                                                ToolTip="Set the global −1 hotkey"/>
+                                        <Button Content="&#x2715;" Tag="{Binding}" Click="ClearDecHotkey_Click"
+                                                Style="{StaticResource Btn}" ToolTip="Clear −1 hotkey"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Live overlay preview -->
+            <Border Grid.Row="3" Margin="14,0,14,12" Background="#0a1410"
+                    BorderBrush="{DynamicResource ThemeAccentDeep}" BorderThickness="1" CornerRadius="8" Padding="12,8">
+                <StackPanel>
+                    <TextBlock Text="OVERLAY PREVIEW" Foreground="{DynamicResource ThemeAccent}" FontSize="9"
+                               FontWeight="Bold" Margin="0,0,0,6"/>
+                    <ItemsControl ItemsSource="{Binding ElementName=CounterList, Path=ItemsSource}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Visibility="{Binding Show, Converter={StaticResource B2V}}"
+                                        Background="#12241a" CornerRadius="6" Padding="10,5" Margin="0,0,8,6">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Name}" Foreground="#cfe0bd" FontSize="12"
+                                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                        <TextBlock Text="{Binding Value}" Foreground="{Binding ColorBrush}"
+                                                   FontSize="17" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

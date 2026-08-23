@@ -1,0 +1,142 @@
+<Window x:Class="GameTracker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Tequilas' Tavern" Height="620" Width="520"
+        WindowStartupLocation="CenterScreen"
+        Background="#04081C"
+        WindowStyle="SingleBorderWindow">
+    <Window.Resources>
+        <!-- ====== Final Fantasy 1 menu look ====== -->
+        <!-- Classic royal-blue menu fill -->
+        <LinearGradientBrush x:Key="FfBox" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#1424C0" Offset="0"/>
+            <GradientStop Color="#0A16A0" Offset="1"/>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="FfText"  Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="FfGold"  Color="#F8D878"/>
+        <SolidColorBrush x:Key="FfDim"   Color="#9FB0FF"/>
+
+        <!-- FF1 window frame: white double border with the blue fill -->
+        <Style x:Key="FfFrame" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource FfBox}"/>
+            <Setter Property="BorderBrush" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="3"/>
+        </Style>
+        <Style x:Key="FfInner" TargetType="Border">
+            <Setter Property="BorderBrush" Value="#8090E8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="3"/>
+        </Style>
+
+        <!-- FF1 menu entry: "▶ COMMAND" with the cursor appearing on hover -->
+        <Style x:Key="FfMenuButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource FfText}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontFamily" Value="Lucida Console, Consolas"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="6,7"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="26"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="cursor" Text="▶" Foreground="{StaticResource FfGold}"
+                                       FontFamily="Lucida Console, Consolas" FontSize="15"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                                       Visibility="Hidden"/>
+                            <ContentPresenter Grid.Column="1" VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="cursor" Property="Visibility" Value="Visible"/>
+                                <Setter Property="Foreground" Value="{StaticResource FfGold}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title window -->
+        <Border Grid.Row="0" Style="{StaticResource FfFrame}" Margin="0,0,0,12">
+            <Border Style="{StaticResource FfInner}">
+                <StackPanel Margin="10,10">
+                    <TextBlock Text="TEQUILAS' TAVERN" Foreground="{StaticResource FfText}"
+                               FontFamily="Lucida Console, Consolas" FontSize="24" FontWeight="Bold"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="~ chat · overlays · tavern tales ~" Foreground="{StaticResource FfDim}"
+                               FontFamily="Lucida Console, Consolas" FontSize="12"
+                               HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <!-- Main menu (two columns, FF1 command-list style) -->
+        <Border Grid.Row="1" Style="{StaticResource FfFrame}">
+            <Border Style="{StaticResource FfInner}">
+                <Grid Margin="12,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <Button Style="{StaticResource FfMenuButton}" Content="CHAT" Click="Chat_Click"
+                                ToolTip="Multi-chat: Twitch, TikTok (SSN) and Restream in one room"/>
+                        <Button Style="{StaticResource FfMenuButton}" Content="CHAT MAGIC" Click="ChatFeatures_Click"
+                                ToolTip="Points, redeems, Tavern Tales, chat commands and the Discord bot"/>
+                        <Button Style="{StaticResource FfMenuButton}" Content="ALERTS" Click="GiftAlerts_Click"
+                                ToolTip="TikTok gift sounds and tiers + the live activity feed"/>
+                        <Button Style="{StaticResource FfMenuButton}" Content="GOALS" Click="Goals_Click"
+                                ToolTip="Overlay goal bars (subs, follows, gifts...)"/>
+                        <Button Style="{StaticResource FfMenuButton}" Content="COUNTERS" Click="Counters_Click"
+                                ToolTip="On-stream counters with +/- hotkeys"/>
+                        <Button Style="{StaticResource FfMenuButton}" Content="PANELS" Click="TextPanels_Click"
+                                ToolTip="Custom text overlays for OBS"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <Button Style="{StaticResource FfMenuButton}" Content="VOICE LAB" Click="VoiceLab_Click"
+                                ToolTip="TTS voices and effects"/>
+                        <Button Style="{StaticResource FfMenuButton}" Content="VOICE MORPH" Click="VoiceMorph_Click"
+                                ToolTip="Live mic voice morphing"/>
+                        <Button Style="{StaticResource FfMenuButton}" Content="STATS" Click="Stats_Click"
+                                ToolTip="This stream's numbers with a copyable recap"/>
+                        <Button Style="{StaticResource FfMenuButton}" Content="OVERLAYS" Click="Overlays_Click"
+                                ToolTip="Open the overlay folder (OBS browser-source URLs)"/>
+                        <Button Style="{StaticResource FfMenuButton}" Content="CONFIG" Click="Settings_Click"
+                                ToolTip="Settings: theme, TTS, overlay port, hotkeys"/>
+                        <Button Style="{StaticResource FfMenuButton}" Content="HELP" Click="Help_Click"
+                                ToolTip="Hotkeys and the how-to guide"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Border>
+
+        <!-- Status dialog box -->
+        <Border Grid.Row="2" Style="{StaticResource FfFrame}" Margin="0,12,0,0">
+            <Border Style="{StaticResource FfInner}">
+                <TextBlock x:Name="StatusText" Margin="10,8"
+                           Text="Welcome to the tavern. Select thy command."
+                           Foreground="{StaticResource FfText}"
+                           FontFamily="Lucida Console, Consolas" FontSize="12"
+                           TextWrapping="Wrap"/>
+            </Border>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,55 @@
+@echo off
+setlocal enabledelayedexpansion
+
+rem Run this from anywhere - it cd's to its own folder
+cd /d "%~dp0"
+
+rem --- Read <Version> from the .csproj so the installer matches the app ---
+set "APPVER="
+for /f "usebackq delims=" %%V in (`powershell -NoProfile -Command "[regex]::Match((Get-Content 'GameTracker.csproj' -Raw),'<Version>(.*?)</Version>').Groups[1].Value"`) do set "APPVER=%%V"
+if not defined APPVER (
+    echo [X] Could not read ^<Version^> from GameTracker.csproj
+    exit /b 1
+)
+
+echo.
+echo === Publishing LazerGuanas Game Hunter v%APPVER% (Release, win-x64, self-contained, single-file) ===
+echo.
+
+dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:Version=%APPVER%
+if errorlevel 1 (
+    echo.
+    echo [X] dotnet publish failed.
+    exit /b 1
+)
+
+rem Locate Inno Setup compiler - checks per-user, machine-wide, then PATH
+set "ISCC="
+if exist "%LocalAppData%\Programs\Inno Setup 6\ISCC.exe" set "ISCC=%LocalAppData%\Programs\Inno Setup 6\ISCC.exe"
+if not defined ISCC if exist "%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" set "ISCC=%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe"
+if not defined ISCC if exist "%ProgramFiles%\Inno Setup 6\ISCC.exe" set "ISCC=%ProgramFiles%\Inno Setup 6\ISCC.exe"
+if not defined ISCC for /f "delims=" %%I in ('where ISCC.exe 2^>nul') do set "ISCC=%%I"
+if not defined ISCC (
+    echo.
+    echo [X] ISCC.exe not found.
+    echo     Install Inno Setup 6 from https://jrsoftware.org/isdl.php then re-run.
+    exit /b 1
+)
+
+echo.
+echo === Compiling installer with Inno Setup ===
+echo Using: !ISCC!
+echo.
+
+"!ISCC!" /DMyAppVersion=%APPVER% GameTracker.iss
+if errorlevel 1 (
+    echo.
+    echo [X] Inno Setup compile failed.
+    exit /b 1
+)
+
+echo.
+echo === Done ===
+echo Installer:    %~dp0installer\LazerGuanas-Game-Hunter-Setup-%APPVER%.exe
+echo.
+endlocal

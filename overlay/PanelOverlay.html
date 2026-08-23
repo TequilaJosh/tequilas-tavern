@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Text Overlay</title>
+<style>
+  /* Bundled bonus font, served from inside the app. */
+  @font-face {
+    font-family: 'MR. Saturn';
+    src: url('/font/saturn.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  html, body {
+    margin: 0; padding: 0; background: transparent; overflow: hidden;
+    font-family: 'Segoe UI', Segoe, system-ui, sans-serif;
+  }
+
+  /* Row of bordered boxes: [left] [center: header/divider/lines] [right] */
+  #wrap {
+    position: absolute; inset: 8px; box-sizing: border-box;
+    display: flex; align-items: stretch; gap: 10px;
+  }
+  #wrap.empty { display: none; }
+
+  .pbox {
+    box-sizing: border-box; overflow: hidden;
+    border: 2px solid #4a7c3a; border-radius: 12px;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55);
+    /* background set from JS so the streamer's opacity applies */
+  }
+
+  #left, #right {
+    flex: 0 1 auto; max-width: 34%;
+    padding: 10px 14px; line-height: 1.3;
+    white-space: pre-wrap; word-break: break-word;
+    display: none;
+  }
+  #left img, #right img {
+    display: block; max-width: 100%; height: auto;
+    margin: 0 auto 6px; border-radius: 6px;
+  }
+  /* Horizontal side blocks: single-line flow, image inline before text */
+  #left.horiz, #right.horiz { white-space: nowrap; }
+  #left.horiz img, #right.horiz img {
+    display: inline-block; vertical-align: middle; margin: 0 8px 0 0; max-width: none;
+  }
+  /* Vertical (credits-style) marquee used by side blocks */
+  .marqv { overflow: hidden; }
+  .marqv .miv { display: block; animation: marqv linear infinite; }
+  .marqv .miv > .cpv { padding-bottom: 1em; }
+  @keyframes marqv { to { transform: translateY(-50%); } }
+  .marq .miv, #left.marq, #right.marq { white-space: nowrap; }
+  .marq .mi > .cp { padding-right: 3em; }
+
+  #center { flex: 1 1 auto; display: flex; flex-direction: column; }
+
+  /* Header + the divider border below it */
+  #hdr {
+    flex: 0 0 auto; padding: 10px 16px 8px;
+    border-bottom: 2px solid #2e4a30;
+    font-weight: 700; line-height: 1.25; word-break: break-word;
+  }
+  #hdr:empty { display: none; }
+
+  #lines { flex: 1 1 auto; overflow: hidden; padding: 8px 16px 10px; }
+  .line { margin: 4px 0; line-height: 1.3; word-break: break-word; }
+  .line img.linepic {
+    vertical-align: middle; margin-right: 8px; border-radius: 4px; max-width: 100%;
+  }
+
+  /* Marquee lines: content duplicated, shifted by exactly one copy for a seamless loop */
+  .marq { overflow: hidden; white-space: nowrap; }
+  .marq .mi {
+    display: inline-block; white-space: nowrap;
+    animation: marq linear infinite;
+  }
+  .marq .mi > span { padding-right: 3em; }
+  @keyframes marq { to { transform: translateX(-50%); } }
+</style>
+</head>
+<body>
+  <div id="wrap" class="empty">
+    <div id="left" class="pbox"></div>
+    <div id="center" class="pbox">
+      <div id="hdr"></div>
+      <div id="lines"></div>
+    </div>
+    <div id="right" class="pbox"></div>
+  </div>
+
+<script>
+"use strict";
+(function () {
+  var PANEL_INDEX = __PANEL_INDEX__;   // injected by the server (1-based)
+  var ws = null, retryMs = 1000;
+
+  function wsUrl() {
+    var p = location.protocol;
+    if (p === "http:" || p === "https:") {
+      return (p === "https:" ? "wss:" : "ws:") + "//" + location.host + "/ws";
+    }
+    return "ws://localhost:3620/ws";
+  }
+
+  function connect() {
+    try { ws = new WebSocket(wsUrl()); } catch (e) { schedule(); return; }
+    ws.onopen = function () { retryMs = 1000; };
+    ws.onmessage = function (ev) {
+      try {
+        var d = JSON.parse(ev.data);
+        if (d.type === "snapshot" && Array.isArray(d.panels)) render(d.panels);
+        else if (d.type === "panels" && Array.isArray(d.panels)) render(d.panels);
+      } catch (e) { /* ignore bad frames */ }
+    };
+    ws.onclose = function () { schedule(); };
+    ws.onerror = function () { /* onclose follows */ };
+  }
+  function schedule() {
+    setTimeout(connect, retryMs);
+    retryMs = Math.min(15000, retryMs * 2);
+  }
+
+  function fam(f) { return f ? "'" + f + "', 'Segoe UI', sans-serif" : ""; }
+
+  function makeSideContent(s, side) {
+    // Fresh copy of the block's image + text nodes (marquee needs two identical copies).
+    var nodes = [];
+    if (s.img) {
+      var img = document.createElement("img");
+      img.src = "/pimg/" + PANEL_INDEX + "/" + side + "?v=" + (s.imgv || "0");
+      if (s.imgw) img.style.width = s.imgw + "px";
+      img.addEventListener("error", function () { if (this.parentNode) this.remove(); });
+      nodes.push(img);
+    }
+    if (s.text) {
+      var t = document.createElement("span");
+      t.textContent = s.text;
+      nodes.push(t);
+    }
+    return nodes;
+  }
+
+  function sideBlock(el, s, side, marquees) {
+    while (el.firstChild) el.removeChild(el.firstChild);
+    el.classList.remove("horiz", "marq", "marqv");
+    if (!(s && (s.text || s.img))) { el.style.display = "none"; return; }
+
+    el.style.fontFamily = fam(s.font);
+    el.style.fontSize = (s.size || 20) + "px";
+    el.style.color = s.color || "#e8e0c4";
+    el.style.display = "block";
+
+    var horizontal = (s.dir === "h");
+    if (horizontal) el.classList.add("horiz");
+
+    if (s.scroll) {
+      if (horizontal) {
+        // Sideways ticker.
+        el.classList.add("marq");
+        var mi = document.createElement("span"); mi.className = "mi";
+        for (var k = 0; k < 2; k++) {
+          var cp = document.createElement("span"); cp.className = "cp";
+          makeSideContent(s, side).forEach(function (n) { cp.appendChild(n); });
+          mi.appendChild(cp);
+        }
+        el.appendChild(mi);
+        marquees.push({ el: mi, axis: "x", speed: Math.max(10, s.speed || 60) });
+      } else {
+        // Upward credits roll.
+        el.classList.add("marqv");
+        var miv = document.createElement("div"); miv.className = "miv";
+        for (var k2 = 0; k2 < 2; k2++) {
+          var cpv = document.createElement("div"); cpv.className = "cpv";
+          makeSideContent(s, side).forEach(function (n) { cpv.appendChild(n); });
+          miv.appendChild(cpv);
+        }
+        el.appendChild(miv);
+        marquees.push({ el: miv, axis: "y", speed: Math.max(10, s.speed || 60) });
+      }
+    } else {
+      makeSideContent(s, side).forEach(function (n) { el.appendChild(n); });
+    }
+  }
+
+  function render(panels) {
+    var wrap = document.getElementById("wrap");
+    var leftEl = document.getElementById("left");
+    var centerEl = document.getElementById("center");
+    var rightEl = document.getElementById("right");
+    var hdr = document.getElementById("hdr");
+    var linesEl = document.getElementById("lines");
+    var p = panels[PANEL_INDEX - 1];
+
+    var hasContent = p && ((p.header && p.header.text) ||
+                           (Array.isArray(p.lines) && p.lines.length) ||
+                           (p.left && (p.left.text || p.left.img)) ||
+                           (p.right && (p.right.text || p.right.img)));
+    wrap.className = hasContent ? "" : "empty";
+    if (!hasContent) return;
+
+    // Background opacity (default fully opaque).
+    var alpha = 1;
+    if (typeof p.opacity === "number") alpha = Math.max(0, Math.min(100, p.opacity)) / 100;
+    var bg = "rgba(10, 20, 16, " + alpha + ")";
+    leftEl.style.background = bg;
+    centerEl.style.background = bg;
+    rightEl.style.background = bg;
+
+    var marquees = [];
+    sideBlock(leftEl, p.left, "left", marquees);
+    sideBlock(rightEl, p.right, "right", marquees);
+
+    hdr.textContent = (p.header && p.header.text) || "";
+    if (p.header) {
+      hdr.style.fontFamily = fam(p.header.font);
+      hdr.style.fontSize = (p.header.size || 28) + "px";
+      hdr.style.color = p.header.color || "#7cc44a";
+    }
+
+    while (linesEl.firstChild) linesEl.removeChild(linesEl.firstChild);
+    var lines = Array.isArray(p.lines) ? p.lines : [];
+    for (var i = 0; i < lines.length; i++) {
+      var ln = lines[i];
+      var div = document.createElement("div");
+      div.style.fontFamily = fam(ln.font);
+      div.style.fontSize = (ln.size || 24) + "px";
+      div.style.color = ln.color || "#e8e0c4";
+
+      // Optional per-line image (sits before the text; stays put even on scroll lines).
+      var limg = null;
+      if (ln.img) {
+        limg = document.createElement("img");
+        limg.className = "linepic";
+        limg.src = "/pimg/" + PANEL_INDEX + "/line" + i + "?v=" + (ln.imgv || "0");
+        if (ln.imgw) limg.style.width = ln.imgw + "px";
+        limg.addEventListener("error", function () { if (this.parentNode) this.remove(); });
+      }
+
+      if (ln.scroll && ln.text) {
+        div.className = "line marq";
+        if (limg) div.appendChild(limg);
+        var mi = document.createElement("span");
+        mi.className = "mi";
+        // Two copies -> translateX(-50%) loops seamlessly.
+        var a = document.createElement("span"); a.textContent = ln.text;
+        var b = document.createElement("span"); b.textContent = ln.text;
+        mi.appendChild(a); mi.appendChild(b);
+        div.appendChild(mi);
+        marquees.push({ el: mi, axis: "x", speed: Math.max(10, ln.speed || 80) });
+      } else {
+        div.className = "line";
+        if (limg) div.appendChild(limg);
+        if (ln.text) div.appendChild(document.createTextNode(ln.text));
+        else if (!limg) div.textContent = " ";
+      }
+      linesEl.appendChild(div);
+    }
+
+    // Set marquee durations from measured width so "speed" means pixels/second.
+    requestAnimationFrame(function () {
+      for (var i = 0; i < marquees.length; i++) {
+        var m = marquees[i];
+        var px = (m.axis === "y" ? m.el.scrollHeight : m.el.scrollWidth) / 2;
+        if (px > 0) m.el.style.animationDuration = (px / m.speed) + "s";
+      }
+    });
+  }
+
+  connect();
+})();
+</script>
+</body>
+</html>
