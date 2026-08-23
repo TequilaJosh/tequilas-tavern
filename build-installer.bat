@@ -6,14 +6,14 @@ cd /d "%~dp0"
 
 rem --- Read <Version> from the .csproj so the installer matches the app ---
 set "APPVER="
-for /f "usebackq delims=" %%V in (`powershell -NoProfile -Command "[regex]::Match((Get-Content 'GameTracker.csproj' -Raw),'<Version>(.*?)</Version>').Groups[1].Value"`) do set "APPVER=%%V"
+for /f "usebackq delims=" %%V in (`powershell -NoProfile -Command "[regex]::Match((Get-Content 'TequilasTavern.csproj' -Raw),'<Version>(.*?)</Version>').Groups[1].Value"`) do set "APPVER=%%V"
 if not defined APPVER (
-    echo [X] Could not read ^<Version^> from GameTracker.csproj
+    echo [X] Could not read ^<Version^> from TequilasTavern.csproj
     exit /b 1
 )
 
 echo.
-echo === Publishing LazerGuanas Game Hunter v%APPVER% (Release, win-x64, self-contained, single-file) ===
+echo === Publishing Tequilas' Tavern v%APPVER% (Release, win-x64, self-contained, single-file) ===
 echo.
 
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:Version=%APPVER%
@@ -41,7 +41,7 @@ echo === Compiling installer with Inno Setup ===
 echo Using: !ISCC!
 echo.
 
-"!ISCC!" /DMyAppVersion=%APPVER% GameTracker.iss
+"!ISCC!" /DMyAppVersion=%APPVER% TequilasTavern.iss
 if errorlevel 1 (
     echo.
     echo [X] Inno Setup compile failed.
@@ -50,6 +50,6 @@ if errorlevel 1 (
 
 echo.
 echo === Done ===
-echo Installer:    %~dp0installer\LazerGuanas-Game-Hunter-Setup-%APPVER%.exe
+echo Installer:    %~dp0installer\Tequilas-Tavern-Setup-%APPVER%.exe
 echo.
 endlocal
