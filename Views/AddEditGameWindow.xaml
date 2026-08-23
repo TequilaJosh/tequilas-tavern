@@ -8,7 +8,7 @@
         MinWidth="420" MinHeight="540"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None" ResizeMode="CanResize"
-        Icon="/iguana-eye.ico"
+        Icon="/tt-chat.ico"
         Background="{DynamicResource ScaleBrush}">
 
     <shell:WindowChrome.WindowChrome>
@@ -108,7 +108,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
-                    <Image Source="/iguana-eye.ico" Width="16" Height="16"
+                    <Image Source="/tt-chat.ico" Width="16" Height="16"
                            Margin="0,0,8,0" VerticalAlignment="Center"
                            RenderOptions.BitmapScalingMode="HighQuality"/>
                     <TextBlock x:Name="TitleBarText" Text="GAME DETAILS"

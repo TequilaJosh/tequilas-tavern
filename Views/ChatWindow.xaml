@@ -9,7 +9,7 @@
         WindowStartupLocation="CenterOwner"
         WindowStyle="None" ResizeMode="CanResize"
         AllowsTransparency="True"
-        Icon="/iguana-eye.ico"
+        Icon="/tt-chat.ico"
         Background="{DynamicResource ScaleBrush}">
 
     <shell:WindowChrome.WindowChrome>
@@ -79,7 +79,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
-                        <Image Source="/iguana-eye.ico" Width="16" Height="16" Margin="0,0,8,0"
+                        <Image Source="/tt-chat.ico" Width="16" Height="16" Margin="0,0,8,0"
                                VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock Text="LIVE CHAT" Foreground="{DynamicResource ThemeAccent}" FontSize="11"
                                    FontWeight="Bold" VerticalAlignment="Center"/>
@@ -192,7 +192,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" VerticalAlignment="Center" Foreground="#7a9070" FontSize="11"
                                    TextWrapping="Wrap"
-                                   Text="Viewers: !request &lt;game&gt; adds to Dormant, !ghhelp shows all commands. Overlay, sound alerts, points &amp; theme are in Settings (⚙)."/>
+                                   Text="Viewers: tt signup &lt;class&gt; &lt;race&gt; makes a Tavern Tales hero, !ghhelp shows all commands. Overlay, sound alerts, points &amp; theme are in Settings (⚙)."/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                             <Button Content="&#128101; Chatters" Click="Chatters_Click"
                                     Style="{StaticResource ConnectBtn}" Margin="8,0,0,0"

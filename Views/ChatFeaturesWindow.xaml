@@ -7,7 +7,7 @@
         MinWidth="560" MinHeight="480"
         WindowStartupLocation="CenterOwner"
         WindowStyle="None" ResizeMode="CanResize"
-        Icon="/iguana-eye.ico"
+        Icon="/tt-chat.ico"
         Background="{DynamicResource ScaleBrush}">
 
     <shell:WindowChrome.WindowChrome>
@@ -107,7 +107,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
-                        <Image Source="/iguana-eye.ico" Width="16" Height="16" Margin="0,0,8,0"
+                        <Image Source="/tt-chat.ico" Width="16" Height="16" Margin="0,0,8,0"
                                VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock Text="CHAT FEATURES" Foreground="{DynamicResource ThemeAccent}" FontSize="11"
                                    FontWeight="Bold" VerticalAlignment="Center"/>
@@ -154,7 +154,7 @@
                     <TextBlock Foreground="#7a9070" FontSize="11" Margin="0,2,0,0" TextWrapping="Wrap"
                                Text="Create a webhook on the Discord channel you want (Channel settings → Integrations → Webhooks), paste its URL here. Viewers typing !clip — or dropping a Twitch clip link — get posted there automatically."/>
                     <TextBlock Foreground="#7a9070" FontSize="11" Margin="0,8,0,2" TextWrapping="Wrap"
-                               Text="Using the LazerGuanas bot instead of a webhook? Fill these in and clips go to the bot (which can do more — welcome messages, moderation, commands). Leave blank to use the webhook above."/>
+                               Text="Using TavernTalesBot instead of a webhook? Fill these in and clips go to the bot (which can do more — welcome messages, moderation, commands). Leave blank to use the webhook above."/>
                     <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
                         <TextBlock Text="Bot ingest URL" Style="{StaticResource Lbl}"/>
                         <TextBox x:Name="BotIngestUrlBox" Style="{StaticResource Txt}" Width="300" Margin="4,0,0,0"
@@ -171,7 +171,7 @@
                     <CheckBox x:Name="RpgEnabledCb" Style="{StaticResource Chk}" Margin="0,10,0,0"
                               Content="Let chatters play Tavern Tales (the bot's RPG) from chat"/>
                     <TextBlock Foreground="#7a9070" FontSize="11" Margin="0,2,0,0" TextWrapping="Wrap"
-                               Text="Forwards ! game commands (!create, !adventure, !attack…) to the bot. First time, a viewer links with !play &lt;their Discord @username&gt; and !confirm &lt;code&gt; so their chat and Discord share one character."/>
+                               Text="Forwards tt game commands (tt create, tt adventure, tt signup…) to the bot. New viewers make a hero right in chat with tt signup &lt;class&gt; &lt;race&gt; — no Discord needed. Linking to a Discord hero is optional: tt link &lt;Discord name&gt; then tt confirm &lt;code&gt;."/>
 
                     <TextBlock Text="POINTS" Style="{StaticResource SecHdr}"/>
                     <CheckBox x:Name="PointsCb" Content="Give points to everyone on the chatters list" Style="{StaticResource Chk}"/>

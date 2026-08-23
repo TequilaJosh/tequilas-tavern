@@ -190,23 +190,12 @@ namespace GameTracker
 
         private void Chat_Click(object sender, RoutedEventArgs e) => OpenChatWindow().Activate();
 
-        private Views.ChatFeaturesWindow? _featuresWindow;
+        // These two set DialogResult on save, so they must be shown modally.
         private void ChatFeatures_Click(object sender, RoutedEventArgs e)
-        {
-            if (_featuresWindow != null) { _featuresWindow.Activate(); return; }
-            _featuresWindow = new Views.ChatFeaturesWindow { Owner = this };
-            _featuresWindow.Closed += (_, _) => _featuresWindow = null;
-            _featuresWindow.Show();
-        }
+            => new Views.ChatFeaturesWindow { Owner = this }.ShowDialog();
 
-        private Views.GiftAlertsWindow? _giftWindow;
         private void GiftAlerts_Click(object sender, RoutedEventArgs e)
-        {
-            if (_giftWindow != null) { _giftWindow.Activate(); return; }
-            _giftWindow = new Views.GiftAlertsWindow { Owner = this };
-            _giftWindow.Closed += (_, _) => _giftWindow = null;
-            _giftWindow.Show();
-        }
+            => new Views.GiftAlertsWindow { Owner = this }.ShowDialog();
 
         private Views.GoalsWindow? _goalsWindow;
         private void Goals_Click(object sender, RoutedEventArgs e)

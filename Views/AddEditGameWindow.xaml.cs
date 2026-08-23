@@ -196,7 +196,7 @@ namespace GameTracker.Views
 
             if (dur <= TimeSpan.Zero)
             {
-                MessageBox.Show("Enter an hours and/or minutes amount greater than zero.",
+                TavernDialog.Show("Enter an hours and/or minutes amount greater than zero.",
                     "Add Session", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
@@ -222,7 +222,7 @@ namespace GameTracker.Views
         {
             if (string.IsNullOrWhiteSpace(TitleBox.Text))
             {
-                MessageBox.Show("Please enter a game title.", "Missing Title",
+                TavernDialog.Show("Please enter a game title.", "Missing Title",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 TitleBox.Focus();
                 return;
@@ -257,7 +257,7 @@ namespace GameTracker.Views
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show(
+            var result = TavernDialog.Show(
                 $"Are you sure you want to delete \"{_game.Title}\"?\nThis cannot be undone.",
                 "Delete Game", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 

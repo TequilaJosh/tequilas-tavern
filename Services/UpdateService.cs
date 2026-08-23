@@ -50,7 +50,7 @@ namespace GameTracker.Services
                 if (latest == null || latest <= current)
                 {
                     if (!silent)
-                        MessageBox.Show($"You're on the latest version (v{current.ToString(3)}).",
+                        Views.TavernDialog.Show($"You're on the latest version (v{current.ToString(3)}).",
                             "Tequilas' Tavern", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
@@ -63,7 +63,7 @@ namespace GameTracker.Services
                     (notes.Length > 0 ? $"{Truncate(notes, 400)}\n\n" : string.Empty) +
                     "Download and install it now? The app will update and reopen automatically.";
 
-                if (MessageBox.Show(prompt, "Update Available",
+                if (Views.TavernDialog.Show(prompt, "Update Available",
                         MessageBoxButton.YesNo, MessageBoxImage.Information) != MessageBoxResult.Yes)
                     return;
 
@@ -137,7 +137,7 @@ namespace GameTracker.Services
             catch (Exception ex)
             {
                 if (!silent)
-                    MessageBox.Show($"Couldn't check for updates:\n{ex.Message}",
+                    Views.TavernDialog.Show($"Couldn't check for updates:\n{ex.Message}",
                         "Update", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }

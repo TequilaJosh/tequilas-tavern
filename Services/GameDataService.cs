@@ -73,7 +73,7 @@ namespace GameTracker.Services
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Error saving data: {ex.Message}", "Save Error",
+                GameTracker.Views.TavernDialog.Show($"Error saving data: {ex.Message}", "Save Error",
                     System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
             }
         }

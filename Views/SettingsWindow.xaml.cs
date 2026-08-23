@@ -393,7 +393,7 @@ namespace GameTracker.Views
             Step(1, "In the Discord channel you want announcements in, an admin types: !gh setup updatechannel. The bot posts there whenever a new Tequilas' Tavern version is released. Turn it off with !gh setup updateoff.");
 
             Section("Tavern Tales — the chat RPG (needs the companion bot)");
-            Body("A text RPG your community plays by typing \"tt <command>\" — in Discord and in your stream chat, sharing one character. It runs on the LazerGuanas Discord bot; Tequilas' Tavern forwards chat commands to it.");
+            Body("A text RPG your community plays by typing \"tt <command>\" — in Discord and in your stream chat, sharing one character. It runs on TavernTalesBot (the companion Discord bot); Tequilas' Tavern forwards chat commands to it.");
             Step(1, "Set up the bot (see its README) and, in Settings → Chat → ⚙ Features → Discord, paste the Bot ingest URL + token, then tick \"Let chatters play Tavern Tales from chat\".");
             Step(2, "Every command starts with tt. Discord players just start: tt create <class> <race> [name], then tt adventure. Everyone in the channel sees the fights — great for drawing a crowd. Want a fresh start? tt new <class> <race> [name].");
             Step(3, "Stream-chat viewers link first: tt play <their Discord @username> → the bot DMs them a code → they type tt confirm <code> in chat. Now their chat and Discord share the same hero.");
@@ -1003,7 +1003,7 @@ namespace GameTracker.Views
                 BackupStatus.Text = "That file doesn't look like a Tequilas' Tavern backup.";
                 return;
             }
-            if (MessageBox.Show(this,
+            if (TavernDialog.Show(this,
                 "Restore this backup? Your current data is saved to a safety backup first, then the app restarts.",
                 "Import backup", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
 

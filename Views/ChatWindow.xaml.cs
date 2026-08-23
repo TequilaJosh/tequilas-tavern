@@ -396,7 +396,7 @@ namespace GameTracker.Views
             {
                 case "commands":
                 case "command":
-                    text = $"Commands: {balanceCmd} = your {pointsName} · !request <game> = suggest a game · " +
+                    text = $"Commands: {balanceCmd} = your {pointsName} · tt help = Tavern Tales RPG · " +
                            "!vote <#> = vote in the poll · !ghhelp redeems = spendable rewards";
                     break;
 
@@ -729,7 +729,7 @@ namespace GameTracker.Views
                 string.IsNullOrWhiteSpace(_features.BotIngestUrl) ||
                 string.IsNullOrWhiteSpace(_features.BotIngestToken))
             {
-                MessageBox.Show(this,
+                TavernDialog.Show(this,
                     "Connect the Tavern Tales bot first (Settings → Chat features → Discord bot), then try again.",
                     "Raid", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
@@ -750,7 +750,7 @@ namespace GameTracker.Views
 
         private async System.Threading.Tasks.Task SpawnRaid(int level)
         {
-            if (MessageBox.Show(this,
+            if (TavernDialog.Show(this,
                     $"Spawn a Level {level} ({RaidDiff(level)}) raid with a 5-minute join timer?\nViewers join with  tt raid join",
                     "Spawn Raid", MessageBoxButton.OKCancel, MessageBoxImage.Question) != MessageBoxResult.OK)
                 return;
@@ -762,7 +762,7 @@ namespace GameTracker.Views
                 if (desc != null)
                     OverlayServer.Toast($"⚔️ RAID: {desc} — join with tt raid join! (5 min)", confetti: true);
                 else
-                    MessageBox.Show(this, "Couldn't start a raid. A raid may already be active, or check the bot connection in Settings.",
+                    TavernDialog.Show(this, "Couldn't start a raid. A raid may already be active, or check the bot connection in Settings.",
                         "Raid", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             finally { RaidBtn.IsEnabled = true; }

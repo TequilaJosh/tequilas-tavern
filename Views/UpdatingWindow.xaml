@@ -10,7 +10,7 @@
     <Border BorderBrush="{DynamicResource ThemeAccentDeep}" BorderThickness="2">
         <StackPanel Margin="22,20">
             <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                <Image Source="/iguana-eye.ico" Width="24" Height="24" Margin="0,0,10,0"
+                <Image Source="/tt-chat.ico" Width="24" Height="24" Margin="0,0,10,0"
                        VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                 <TextBlock Text="Updating Tequilas' Tavern"
                            Foreground="#e8e0c4" FontSize="14" FontWeight="Bold"

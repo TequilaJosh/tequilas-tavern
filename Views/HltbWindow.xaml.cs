@@ -49,7 +49,7 @@ namespace GameTracker.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
+                TavernDialog.Show(
                     "Couldn't start the in-app browser (WebView2).\n\n" + ex.Message +
                     "\n\nIf this keeps happening, install the Microsoft Edge WebView2 Runtime.",
                     "How Long To Beat", MessageBoxButton.OK, MessageBoxImage.Warning);
