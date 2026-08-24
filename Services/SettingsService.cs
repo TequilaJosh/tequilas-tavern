@@ -226,7 +226,7 @@ namespace GameTracker.Services
 
             // Rev 3 (Tavern only): borrow still-unset essentials from an existing Game
             // Hunter install so chat "just works" — the TTS output device (usually the
-            // virtual cable feeding Discord), chat connections, and the bot link.
+            // TTS output device), chat connections, and the bot link.
             if (s.MigrationRev < 3)
             {
                 try
