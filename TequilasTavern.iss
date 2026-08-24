@@ -1,24 +1,24 @@
-; Inno Setup script for GameTracker
-; Build with: ISCC.exe GameTracker.iss  (or just run build-installer.bat)
+; Inno Setup script for Tequilas' Tavern
+; Build with: ISCC.exe TequilasTavern.iss  (or just run build-installer.bat)
 
-#define MyAppName "LazerGuanas Game Hunter"
+#define MyAppName "Tequilas' Tavern"
 #ifndef MyAppVersion
   #define MyAppVersion "1.0.0"
 #endif
-#define MyAppPublisher "LazerGuanas"
-#define MyAppExeName "GameTracker.exe"
+#define MyAppPublisher "TequilaJosh"
+#define MyAppExeName "TequilasTavern.exe"
 #define MyPublishDir "bin\Release\net8.0-windows10.0.19041.0\win-x64\publish"
 
 [Setup]
-AppId={{8F2A6B33-1E5C-4B6A-9D3F-9F1C5E8A2B40}
+AppId={{4C7D91B8-52E0-47AF-B7D2-3AC0E61F7A55}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName={autopf}\{#MyAppName}
+DefaultDirName={autopf}\Tequilas Tavern
 DefaultGroupName={#MyAppName}
 OutputDir=installer
-OutputBaseFilename=LazerGuanas-Game-Hunter-Setup-{#MyAppVersion}
-SetupIconFile=iguana-eye.ico
+OutputBaseFilename=Tequilas-Tavern-Setup-{#MyAppVersion}
+SetupIconFile=tt-chat.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2
 SolidCompression=yes
