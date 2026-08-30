@@ -117,8 +117,8 @@
     padding: 0;
     background: transparent;
     overflow: hidden;
-    /* System stack: no network fetch, so no invisible-text flash (FOIT). */
-    font-family: 'Segoe UI', Segoe, system-ui, sans-serif;
+    /* Final Fantasy 1 menu look: monospace stack, no network fetch (no FOIT). */
+    font-family: 'Lucida Console', 'Consolas', ui-monospace, 'Courier New', monospace;
   }
 
   /* Free-form layout: a fixed 1280x720 design stage scaled to fit the OBS source.
@@ -129,14 +129,17 @@
     transform-origin: center center;
   }
 
+  /* Final Fantasy 1 menu window: royal-blue fill, white frame with a light-blue
+     inner rule (the classic FF double border). Per-element opacity from layout is
+     applied to the gradient in JS (setBg). */
   .box {
     position: absolute; box-sizing: border-box;
     display: flex; flex-direction: column; overflow: hidden;
-    background: rgb(10, 20, 16);   /* opaque default; per-element opacity set from layout */
-    border: 2px solid #4a7c3a; border-radius: 12px;
-    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55);
-    padding: 10px 14px;
-    color: #e8e0c4;
+    background: linear-gradient(180deg, #1424c0 0%, #0a16a0 100%);   /* opaque default */
+    border: 3px solid #ffffff; border-radius: 8px;
+    box-shadow: inset 0 0 0 2px #8090e8, 0 6px 22px rgba(0, 0, 0, 0.55);
+    padding: 12px 16px;
+    color: #ffffff;
     font-size: 22px;                 /* per-element size from the layout; inner text uses em */
     transform: translateZ(0);
   }
@@ -157,102 +160,91 @@
   /* ---- Counters ---- */
   #cntRows { display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
   .cnt-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-  .cnt-name { font-size: 0.72em; font-weight: 600; color: #cfe0bd; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cnt-name { font-size: 0.72em; font-weight: 600; color: #b8c6f5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .cnt-val { font-size: 1em; font-weight: 800; font-variant-numeric: tabular-nums; flex: 0 0 auto; }
 
   /* ---- Edit mode ---- */
   .partyHint { position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
-               text-align: center; padding: 8px; font-size: 13px; color: #9fb59a; }
+               text-align: center; padding: 8px; font-size: 13px; color: #8494d8; }
   body.editing #party .partyHint { display: flex; }
-  body.editing .box { cursor: move; outline: 1px dashed rgba(124, 196, 74, 0.55); }
-  body.editing .box.sel { outline: 2px solid #7cc44a; }
+  body.editing .box { cursor: move; outline: 1px dashed rgba(159, 180, 255, 0.55); }
+  body.editing .box.sel { outline: 2px solid #9fb4ff; }
   .rz {
     display: none; position: absolute; right: -7px; bottom: -7px;
     width: 15px; height: 15px; border-radius: 3px;
-    background: #7cc44a; border: 2px solid #0a1410; cursor: nwse-resize; z-index: 5;
+    background: #9fb4ff; border: 2px solid #080e34; cursor: nwse-resize; z-index: 5;
   }
   body.editing .rz { display: block; }
   #editbar {
     display: none; position: fixed; left: 12px; top: 12px; z-index: 10000; width: 250px;
-    background: rgba(10, 20, 16, 0.96); border: 1px solid #4a7c3a; border-radius: 8px;
-    padding: 10px 12px; color: #e8e0c4; font-family: 'Segoe UI', sans-serif; font-size: 13px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+    background: linear-gradient(180deg, #1424c0 0%, #0a16a0 100%);
+    border: 3px solid #ffffff; border-radius: 8px;
+    padding: 10px 12px; color: #ffffff;
+    font-family: 'Lucida Console', Consolas, monospace; font-size: 13px;
+    box-shadow: inset 0 0 0 2px #8090e8, 0 4px 18px rgba(0, 0, 0, 0.6);
   }
   body.editing #editbar { display: block; }
-  #editbar h4 { margin: 0 0 6px; color: #7cc44a; font-size: 12px; letter-spacing: 1px; }
-  #editbar #ebSel { color: #d4a437; font-weight: 700; margin-bottom: 4px; }
-  #editbar label { display: block; margin: 7px 0 2px; color: #a8c488; font-size: 11px; }
+  #editbar h4 { margin: 0 0 6px; color: #f8d878; font-size: 12px; letter-spacing: 1px; }
+  #editbar #ebSel { color: #f8d878; font-weight: 700; margin-bottom: 4px; }
+  #editbar label { display: block; margin: 7px 0 2px; color: #8494d8; font-size: 11px; }
   #editbar select, #editbar input[type=number] {
-    width: 100%; box-sizing: border-box; background: #142016; color: #e8e0c4;
-    border: 1px solid #2e4a30; border-radius: 4px; padding: 4px 6px; font-size: 13px;
+    width: 100%; box-sizing: border-box; background: #101a4e; color: #ffffff;
+    border: 1px solid #2438a0; border-radius: 4px; padding: 4px 6px; font-size: 13px;
   }
   #editbar input[type=color] {
-    width: 100%; height: 26px; background: #142016; border: 1px solid #2e4a30; border-radius: 4px;
+    width: 100%; height: 26px; background: #101a4e; border: 1px solid #2438a0; border-radius: 4px;
   }
-  #editbar .hint { color: #7a9070; font-size: 11px; margin-top: 8px; line-height: 1.4; }
-  #editbar .savemark { color: #7cc44a; font-size: 11px; height: 13px; margin-top: 5px; }
+  #editbar .hint { color: #8494d8; font-size: 11px; margin-top: 8px; line-height: 1.4; }
+  #editbar .savemark { color: #9fb4ff; font-size: 11px; height: 13px; margin-top: 5px; }
   #editbar button {
-    background: #243a26; color: #7cc44a; border: 1px solid #4a7c3a; border-radius: 4px;
+    background: #1a2a6e; color: #9fb4ff; border: 1px solid #2438a0; border-radius: 4px;
     padding: 4px 9px; font-size: 12px; cursor: pointer; font-family: 'Segoe UI', sans-serif;
   }
-  #editbar button:hover { background: #4a7c3a; color: #0a1410; }
+  #editbar button:hover { background: #2438a0; color: #080e34; }
   #editbar input[type=text] {
-    background: #142016; color: #e8e0c4; border: 1px solid #2e4a30; border-radius: 4px;
+    background: #101a4e; color: #ffffff; border: 1px solid #2438a0; border-radius: 4px;
     padding: 4px 6px; font-size: 12px; box-sizing: border-box;
   }
-  #editbar .ebsplit { border-top: 1px solid #2e4a30; margin-top: 10px; padding-top: 8px; }
+  #editbar .ebsplit { border-top: 1px solid #2438a0; margin-top: 10px; padding-top: 8px; }
+  #editbar #ebElems .ebElemRow { display: flex; align-items: center; gap: 6px; margin: 4px 0; }
   #editbar #ebElems label {
-    display: flex; align-items: center; gap: 6px; margin: 4px 0;
-    color: #e8e0c4; font-size: 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0;
+    color: #ffffff; font-size: 12px; cursor: pointer;
   }
-  #editbar #ebElems input { accent-color: #7cc44a; }
+  #editbar #ebElems .ebElemRst { padding: 1px 7px; flex: 0 0 auto; }
+  #editbar #ebElems input { accent-color: #9fb4ff; }
   #editbar .prow { display: flex; gap: 5px; }
   #editbar .prow input { flex: 1 1 auto; min-width: 0; }
   #editbar #ebPresetList { margin: 6px 0; }
   #editbar #ebPresetList .p { display: flex; align-items: center; gap: 5px; margin: 4px 0; }
   #editbar #ebPresetList .p .nm {
-    flex: 1 1 auto; min-width: 0; color: #e8e0c4; font-size: 12px;
+    flex: 1 1 auto; min-width: 0; color: #ffffff; font-size: 12px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   #editbar #ebPresetList .p button { padding: 2px 7px; }
   #editbar #ebReset { width: 100%; margin-top: 4px; }
 
   .hd {
-    color: #7cc44a; font-size: 0.55em; font-weight: 700; letter-spacing: 1px;
+    color: #f8d878; font-size: 0.55em; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
     margin-bottom: 0.35em; display: flex; align-items: center; gap: 0.3em; flex: 0 0 auto;
   }
 
-  /* Now Playing */
-  .np-row { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4em; }
-  .np-row .dot {
-    width: 0.5em; height: 0.5em; border-radius: 50%;
-    background: #7cc44a; box-shadow: 0 0 8px #7cc44a; flex: 0 0 auto;
-  }
-  .np-row .title { font-size: 1em; font-weight: 700; color: inherit; }
-  .np-row .time {
-    font-family: Consolas, monospace; font-size: 1em; font-weight: 700;
-    color: #7cc44a; margin-left: auto;
-  }
-  .np-row .req { font-size: 0.58em; font-weight: 600; color: #d4a437; flex-basis: 100%; }
-  .np-row .req:empty { display: none; }
-  /* Idle (no session yet): dim dot, muted title, timer parked at 0:00:00. */
-  .np-row .dot.idle { background: #506050; box-shadow: none; }
-  .np-row .title.waiting { color: #7a9070; font-weight: 600; }
-  .ch-empty { color: #506050; font-size: 0.7em; font-style: italic; }
+  .ch-empty { color: #4a5798; font-size: 0.7em; font-style: italic; }
 
   /* Challenges */
   #chRows { flex: 1 1 auto; overflow: hidden; }
   .ch-row { display: flex; align-items: flex-start; margin: 0.12em 0; }
   .num {
     min-width: 1.15em; height: 1.15em; border-radius: 50%;
-    background: #243a26; color: #7cc44a; font-weight: 700; font-size: 0.62em;
+    background: #1a2a6e; color: #9fb4ff; font-weight: 700; font-size: 0.62em;
     text-align: center; line-height: 1.15em; margin-right: 0.5em; flex: 0 0 auto;
   }
   .ch-txt { color: inherit; font-size: 0.78em; line-height: 1.25; }
 
   /* Live chat */
   .live-dot {
-    width: 0.45em; height: 0.45em; border-radius: 50%; background: #7cc44a;
+    width: 0.45em; height: 0.45em; border-radius: 50%; background: #9fb4ff;
     animation: pulse 2s ease-in-out infinite;
   }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
@@ -278,7 +270,7 @@
   .avatar {
     display: inline-block; width: 1.25em; height: 1.25em; border-radius: 50%;
     overflow: hidden; vertical-align: middle; margin-right: 0.3em;
-    text-align: center; line-height: 1.25em; font-size: 0.72em; font-weight: 700; color: #0a1410;
+    text-align: center; line-height: 1.25em; font-size: 0.72em; font-weight: 700; color: #080e34;
   }
   .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .badge {
@@ -300,7 +292,7 @@
     display: flex; align-items: center; gap: 0.25em;
     padding: 0.18em 0.5em; font-weight: 700;
   }
-  .bubble .bhead .user { color: #0a1410 !important; }
+  .bubble .bhead .user { color: #080e34 !important; }
   .bubble .bbody {
     background: rgba(0, 0, 0, 0.82); color: #fff;
     padding: 0.3em 0.55em; border-radius: 0 0 10px 10px;
@@ -313,31 +305,33 @@
   .cl-dot { width: 0.55em; height: 0.55em; border-radius: 50%; flex: 0 0 auto; }
   .cl-dot.a { background: #35d13a; box-shadow: 0 0 5px #35d13a; }
   .cl-dot.l { background: #e0c341; box-shadow: 0 0 5px #e0c341; }
-  #chatCount { margin-left: auto; color: #a8c488; font-weight: 600; }
+  #chatCount { margin-left: auto; color: #8494d8; font-weight: 600; }
 
   /* Goal bars + poll results */
   .bar-row { margin: 0.28em 0; font-size: 0.78em; }
   .bar-label { display: flex; justify-content: space-between; margin-bottom: 0.15em; }
-  .bar-label .val { color: #a8c488; font-weight: 600; }
+  .bar-label .val { color: #8494d8; font-weight: 600; }
   .bar-track {
     height: 0.75em; border-radius: 0.4em; overflow: hidden;
-    background: rgba(0, 0, 0, 0.45); border: 1px solid #2e4a30;
+    background: rgba(0, 0, 0, 0.45); border: 1px solid #2438a0;
   }
   .bar-fill {
     height: 100%; border-radius: 0.4em 0 0 0.4em;
     transition: width 0.45s ease;
   }
   .poll-q { font-size: 0.82em; font-weight: 700; margin: 0.1em 0 0.3em; word-break: break-word; }
-  .poll-num { color: #d4a437; font-weight: 700; margin-right: 0.3em; }
-  #pollState { margin-left: auto; color: #d4a437; font-weight: 700; font-size: 0.85em; }
+  .poll-num { color: #f8d878; font-weight: 700; margin-right: 0.3em; }
+  #pollState { margin-left: auto; color: #f8d878; font-weight: 700; font-size: 0.85em; }
 
   /* Big toast */
   #toast {
     position: fixed; left: 50%; top: 18%; transform: translateX(-50%) scale(0.8);
     max-width: 84vw; text-align: center; z-index: 8000; pointer-events: none;
-    background: rgba(10, 20, 16, 0.94); border: 3px solid #7cc44a; border-radius: 16px;
-    color: #e8e0c4; font-weight: 800; font-size: 44px; line-height: 1.25;
-    padding: 18px 34px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+    background: linear-gradient(180deg, #1424c0 0%, #0a16a0 100%);
+    border: 3px solid #ffffff; border-radius: 12px;
+    color: #ffffff; font-weight: 800; font-size: 44px; line-height: 1.25;
+    padding: 18px 34px;
+    box-shadow: inset 0 0 0 2px #8090e8, 0 10px 40px rgba(0, 0, 0, 0.7);
     opacity: 0; transition: opacity 0.25s ease, transform 0.25s ease;
   }
   #toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
@@ -361,12 +355,13 @@
   #morphpill {
     position: fixed; left: 50%; bottom: 6%; transform: translateX(-50%);
     z-index: 7900; pointer-events: none; display: none;
-    background: rgba(10, 20, 16, 0.94); border: 2px solid #d4a437; border-radius: 999px;
-    color: #e8e0c4; font-weight: 700; font-size: 26px; padding: 10px 26px;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+    background: linear-gradient(180deg, #1424c0 0%, #0a16a0 100%);
+    border: 3px solid #ffffff; border-radius: 999px;
+    color: #ffffff; font-weight: 700; font-size: 26px; padding: 10px 26px;
+    box-shadow: inset 0 0 0 2px #8090e8, 0 6px 24px rgba(0, 0, 0, 0.6);
   }
   #morphpill.show { display: block; }
-  #morphpill .mt { color: #d4a437; font-variant-numeric: tabular-nums; margin-left: 10px; }
+  #morphpill .mt { color: #f8d878; font-variant-numeric: tabular-nums; margin-left: 10px; }
   @keyframes shake {
     0%, 100% { transform: translate(-50%, -50%) scale(var(--sscale)) translate(0, 0); }
     10% { transform: translate(-50%, -50%) scale(var(--sscale)) translate(-9px, 5px); }
@@ -381,7 +376,7 @@
   .status {
     position: absolute; top: 12px; right: 14px;
     width: 8px; height: 8px; border-radius: 50%;
-    background: #7cc44a; opacity: 0.0;
+    background: #9fb4ff; opacity: 0.0;
     transition: opacity 0.3s ease;
     pointer-events: none;
   }
@@ -393,7 +388,7 @@
     display: none;
     position: absolute; inset: 8px;
     background: rgba(0, 0, 0, 0.88);
-    color: #b6e08a;
+    color: #9fb4ff;
     font-family: Consolas, monospace;
     font-size: 11px;
     line-height: 1.4;
@@ -404,23 +399,12 @@
     z-index: 9999;
   }
   #debug.show { display: block; }
-  #debug .dh { color: #d4a437; font-weight: 700; margin-bottom: 6px; }
+  #debug .dh { color: #f8d878; font-weight: 700; margin-bottom: 6px; }
   #debug .err { color: #ff8a6a; }
 </style>
 </head>
 <body>
   <div id="stage">
-    <section id="np" class="box">
-      <div class="hd">● NOW PLAYING</div>
-      <div class="np-row">
-        <span class="dot idle" id="npDot"></span>
-        <span class="title waiting" id="npTitle">Waiting for a game…</span>
-        <span class="time" id="npTime">0:00:00</span>
-        <span class="req" id="npReq"></span>
-      </div>
-      <div class="rz" data-el="np"></div>
-    </section>
-
     <section id="ch" class="box">
       <div class="hd">🎡 CHALLENGES</div>
       <div id="chRows"><div class="ch-empty">spin a wheel to add challenges</div></div>
@@ -488,8 +472,8 @@
     <label>Text color</label>
     <input id="ebColor" type="color"/>
     <label>Background opacity: <span id="ebBgoVal">100%</span></label>
-    <input id="ebBgo" type="range" min="0" max="100" step="5" style="width:100%; accent-color:#7cc44a;"/>
-    <div class="hint">Click a block to select it. Drag to move, drag the green corner to resize. Changes save automatically.</div>
+    <input id="ebBgo" type="range" min="0" max="100" step="5" style="width:100%; accent-color:#9fb4ff;"/>
+    <div class="hint">Click a block to select it. Drag to move, drag the corner handle to resize. Changes save automatically.</div>
     <div class="savemark" id="ebSaved"></div>
 
     <div class="ebsplit">
@@ -556,7 +540,7 @@
     designWidth: 640,
 
     // -- Misc.
-    defaultUserColor: "#a8c488",
+    defaultUserColor: "#8494d8",
     showStatusDot: true,          // show the tiny connection dot
     debugMaxLines: 200,           // lines kept in the debug overlay
   };
@@ -620,7 +604,7 @@
   function initialOf(u) { u = (u || "").trim(); return u ? u[0].toUpperCase() : "?"; }
 
   // Chat style: "log" (classic) or "boxes" (colored bubbles), plus the palette.
-  let chatStyle = { mode: "log", colors: ["#7cc44a", "#d4a437", "#4aa3c4", "#c44a7c", "#9146FF"] };
+  let chatStyle = { mode: "log", colors: ["#9fb4ff", "#f8d878", "#4aa3c4", "#c44a7c", "#9146FF"] };
   let bubbleIdx = 0;               // palette rotation (per message)
   const msgStore = [];             // recent messages kept so a style switch can re-render
   let lastMessageAt = Date.now();  // for the quiet-period soft reload
@@ -638,7 +622,7 @@
   let autoScroll = true;           // are we pinned to the bottom?
 
   // DOM refs (filled on init).
-  let elNp, elNpTitle, elNpTime, elNpReq, elCh, elChRows,
+  let elCh, elChRows,
       elChatWrap, elChatMsgs, elStatus;
 
   function uptimeStr() {
@@ -868,22 +852,6 @@
       // Game changed → re-filter the counters for the new game.
       if (title !== currentGameTitle) { currentGameTitle = title; renderCounters(lastCounters); }
 
-      // Now Playing — the block stays on screen; content switches between live and waiting.
-      const npDot = document.getElementById("npDot");
-      if (live) {
-        elNpTitle.textContent = title;
-        elNpTitle.classList.remove("waiting");
-        elNpTime.textContent = elapsed;
-        elNpReq.textContent = requester ? "req: " + requester : "";
-        if (npDot) npDot.classList.remove("idle");
-      } else {
-        elNpTitle.textContent = "Waiting for a game…";
-        elNpTitle.classList.add("waiting");
-        elNpTime.textContent = "0:00:00";
-        elNpReq.textContent = "";
-        if (npDot) npDot.classList.add("idle");
-      }
-
       // Challenges — rolled challenges appear in real time; a hint fills the empty box.
       // (Rebuild via DOM, not innerHTML, to stay XSS-safe.)
       while (elChRows.firstChild) elChRows.removeChild(elChRows.firstChild);
@@ -924,12 +892,12 @@
       aimg.addEventListener("error", function () {
         if (aimg.parentNode) aimg.remove();
         av.textContent = initialOf(m.user);
-        av.style.background = m.symbolColor || "#4a7c3a";
+        av.style.background = m.symbolColor || "#2438a0";
       });
       av.appendChild(aimg);
     } else {
       av.textContent = initialOf(m.user);
-      av.style.background = m.symbolColor || "#4a7c3a";
+      av.style.background = m.symbolColor || "#2438a0";
     }
     return av;
   }
@@ -946,7 +914,7 @@
       } else if (b && b.label) {
         const sp = document.createElement("span");
         sp.className = "badge"; sp.textContent = b.label;
-        sp.style.background = b.color || "#4a7c3a";
+        sp.style.background = b.color || "#2438a0";
         target.appendChild(sp);
       }
     }
@@ -991,7 +959,7 @@
       head.appendChild(makeAvatar(m));
       const sym = document.createElement("span");
       sym.className = "sym";
-      sym.style.color = "#0a1410";
+      sym.style.color = "#080e34";
       sym.textContent = m.symbol || "●";
       head.appendChild(sym);
       appendBadges(head, m);
@@ -1074,7 +1042,7 @@
             for (let i = 0; i < d.perSource.length; i++) {
               const s = d.perSource[i];
               const sp = document.createElement("span");
-              sp.style.color = s.symbolColor || "#a8c488";
+              sp.style.color = s.symbolColor || "#8494d8";
               sp.style.marginLeft = i ? "0.45em" : "0";
               sp.textContent = (s.symbol || "●") + " " + s.count;
               cnt.appendChild(sp);
@@ -1104,7 +1072,7 @@
           dot.className = "cl-dot " + (c.s === "l" ? "l" : "a");
           row.appendChild(dot);
           const sym = document.createElement("span");
-          sym.style.color = c.symbolColor || "#a8c488";
+          sym.style.color = c.symbolColor || "#8494d8";
           sym.textContent = c.symbol || "●";
           row.appendChild(sym);
           const nm = document.createElement("span");
@@ -1131,7 +1099,7 @@
       for (let i = 0; i < lastGoals.length; i++) {
         const g = lastGoals[i];
         rows.appendChild(barRow(g.name, g.current + " / " + g.target,
-          Math.min(100, 100 * (g.current || 0) / Math.max(1, g.target)), g.color || "#7cc44a"));
+          Math.min(100, 100 * (g.current || 0) / Math.max(1, g.target)), g.color || "#9fb4ff"));
       }
     } catch (e) { logErr("renderGoals failed: " + (e && e.message)); }
   }
@@ -1144,7 +1112,7 @@
     row.className = "cnt-row";
     const nm = document.createElement("span"); nm.className = "cnt-name"; nm.textContent = name;
     const val = document.createElement("span"); val.className = "cnt-val"; val.textContent = value;
-    val.style.color = color || "#7cc44a";
+    val.style.color = color || "#9fb4ff";
     row.appendChild(nm); row.appendChild(val);
     return row;
   }
@@ -1192,7 +1160,7 @@
         const o = opts[i];
         const pct = total > 0 ? Math.round(100 * (o.votes || 0) / total) : 0;
         const row = barRow((i + 1) + ". " + o.text, (o.votes || 0) + " (" + pct + "%)",
-          pct, o.winner ? "#d4a437" : "#7cc44a");
+          pct, o.winner ? "#f8d878" : "#9fb4ff");
         const numEl = row.querySelector(".bar-label span");
         rows.appendChild(row);
       }
@@ -1204,7 +1172,7 @@
   const FEED_ICONS = { gift: "🎁", follow: "➕", sub: "⭐", share: "🔗", raid: "⚔️",
                        redeem: "✨", clip: "🎬", info: "📣" };
   const FEED_COLORS = { gift: "#f0c86a", follow: "#8fd46a", sub: "#c4a8e8", share: "#6ac4d4",
-                        raid: "#d46a6a", redeem: "#7cc44a", clip: "#d4a437", info: "#a8c488" };
+                        raid: "#d46a6a", redeem: "#9fb4ff", clip: "#f8d878", info: "#8494d8" };
 
   function feedRowEl(item, animate) {
     const row = document.createElement("div");
@@ -1302,7 +1270,7 @@
     else { fxRaf = 0; fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height); }
   }
   function fxStart() { if (!fxRaf) fxRaf = requestAnimationFrame(fxLoop); }
-  const FX_COLORS = ["#7cc44a", "#d4a437", "#e8e0c4", "#4aa3c4", "#c44a7c", "#9146FF", "#ff6b4a"];
+  const FX_COLORS = ["#9fb4ff", "#f8d878", "#ffffff", "#4aa3c4", "#c44a7c", "#9146FF", "#ff6b4a"];
 
   function fxConfetti(durMs) {
     fxEnsureCanvas();
@@ -1523,20 +1491,19 @@
   // =========================================================================
   //  Layout (per-element position / size / font) + in-browser editor (?edit)
   // =========================================================================
-  const ELEMENTS = ["np", "ch", "chat", "cl", "gl", "poll", "feed", "cnt", "party"];
-  const ELEMENT_NAMES = { np: "Now Playing", ch: "Challenges", chat: "Live Chat", cl: "Chatters",
+  const ELEMENTS = ["ch", "chat", "cl", "gl", "poll", "feed", "cnt", "party"];
+  const ELEMENT_NAMES = { ch: "Challenges", chat: "Live Chat", cl: "Chatters",
                           gl: "Goals", poll: "Poll", feed: "Activity Feed", cnt: "Counters",
                           party: "Party (Tavern Tales)" };
   const DEFAULT_LAYOUT = {
-    np:   { x: 246, y: 48,  w: 618, h: 72,  font: "", size: 22, color: "#e8e0c4", bgo: 100 },
-    ch:   { x: 246, y: 128, w: 294, h: 372, font: "", size: 18, color: "#e8e0c4", bgo: 100 },
+    ch:   { x: 246, y: 128, w: 294, h: 372, font: "", size: 18, color: "#ffffff", bgo: 100 },
     chat: { x: 548, y: 128, w: 316, h: 372, font: "", size: 24, color: "#ffffff", bgo: 100 },
-    cl:   { x: 872, y: 128, w: 200, h: 372, font: "", size: 20, color: "#e8e0c4", bgo: 100 },
-    gl:   { x: 246, y: 512, w: 294, h: 160, font: "", size: 18, color: "#e8e0c4", bgo: 100 },
-    poll: { x: 548, y: 512, w: 316, h: 160, font: "", size: 18, color: "#e8e0c4", bgo: 100 },
-    feed: { x: 872, y: 512, w: 200, h: 160, font: "", size: 16, color: "#e8e0c4", bgo: 100, on: false },
-    cnt:  { x: 40,  y: 128, w: 196, h: 200, font: "", size: 20, color: "#e8e0c4", bgo: 100, on: false },
-    party:{ x: 246, y: 556, w: 788, h: 128, font: "", size: 16, color: "#e8e0c4", bgo: 0,   on: false }
+    cl:   { x: 872, y: 128, w: 200, h: 372, font: "", size: 20, color: "#ffffff", bgo: 100 },
+    gl:   { x: 246, y: 512, w: 294, h: 160, font: "", size: 18, color: "#ffffff", bgo: 100 },
+    poll: { x: 548, y: 512, w: 316, h: 160, font: "", size: 18, color: "#ffffff", bgo: 100 },
+    feed: { x: 872, y: 512, w: 200, h: 160, font: "", size: 16, color: "#ffffff", bgo: 100, on: false },
+    cnt:  { x: 40,  y: 128, w: 196, h: 200, font: "", size: 20, color: "#ffffff", bgo: 100, on: false },
+    party:{ x: 246, y: 556, w: 788, h: 128, font: "", size: 16, color: "#ffffff", bgo: 0,   on: false }
   };
   const FONTS = ["", "MR. Saturn", "Segoe UI", "Arial", "Verdana", "Tahoma", "Trebuchet MS",
                  "Georgia", "Times New Roman", "Courier New", "Consolas",
@@ -1588,9 +1555,7 @@
       return;
     }
     // Enabled elements are always on screen; only their content changes with state.
-    const np = document.getElementById("np");
     const ch = document.getElementById("ch");
-    if (np) np.hidden = !isOn("np");
     if (ch) ch.hidden = !isOn("ch");
     if (chat) chat.hidden = !isOn("chat");
     if (cl) cl.hidden = !(isOn("cl") && lastChattersData && lastChattersData.showList);
@@ -1615,12 +1580,13 @@
     el.style.top = c.y + "px";
     el.style.width = c.w + "px";
     el.style.height = c.h + "px";
-    el.style.fontFamily = c.font ? ("'" + c.font + "', 'Segoe UI', sans-serif") : "";
+    el.style.fontFamily = c.font ? ("'" + c.font + "', 'Lucida Console', monospace") : "";
     el.style.fontSize = (c.size || 22) + "px";
     el.style.color = c.color || "";
-    // Background opacity: 0–100, missing = fully opaque.
+    // FF1 royal-blue menu fill; background opacity 0–100 (missing = fully opaque).
     const bgo = (typeof c.bgo === "number" ? Math.max(0, Math.min(100, c.bgo)) : 100) / 100;
-    el.style.background = "rgba(10, 20, 16, " + bgo + ")";
+    el.style.background = "linear-gradient(180deg, rgba(20, 36, 192, " + bgo +
+                          ") 0%, rgba(10, 22, 160, " + bgo + ") 100%)";
   }
 
   // ---- editor ----
@@ -1653,7 +1619,7 @@
       const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = p.name; nm.title = p.name;
       const load = document.createElement("button"); load.textContent = "Load";
       load.addEventListener("click", function () {
-        applyLayout(clone(p.layout)); selectEl(selEl || "np"); scheduleSave(); flashSaved("Loaded " + p.name);
+        applyLayout(clone(p.layout)); selectEl(selEl || "ch"); scheduleSave(); flashSaved("Loaded " + p.name);
       });
       const del = document.createElement("button"); del.textContent = "✕"; del.title = "Delete";
       del.addEventListener("click", function () { presets.splice(i, 1); renderPresets(); savePresets(); });
@@ -1693,13 +1659,12 @@
     const bgoVal = document.getElementById("ebBgoVal");
     if (bgoVal) bgoVal.textContent = bgo + "%";
     document.getElementById("ebSize").value = c.size || 22;
-    document.getElementById("ebColor").value = /^#[0-9a-fA-F]{6}$/.test(c.color) ? c.color : "#e8e0c4";
+    document.getElementById("ebColor").value = /^#[0-9a-fA-F]{6}$/.test(c.color) ? c.color : "#ffffff";
   }
 
   function initEditor() {
     document.body.classList.add("editing");
     // Placeholder content so empty blocks are visible and positionable.
-    document.getElementById("np").hidden = false;
     document.getElementById("ch").hidden = false;
     document.getElementById("cl").hidden = false;
     document.getElementById("clRows").innerHTML =
@@ -1708,14 +1673,11 @@
       '<div class="cl-row"><span class="cl-dot l"></span><span style="color:#25F4EE">♪</span><span>kayla</span></div>';
     document.getElementById("clCount").textContent = "(3)";
     document.getElementById("gl").hidden = false;
-    renderGoals([{ name: "Follower goal", current: 64, target: 100, color: "#7cc44a" },
-                 { name: "Sub goal", current: 3, target: 10, color: "#d4a437" }]);
+    renderGoals([{ name: "Follower goal", current: 64, target: 100, color: "#9fb4ff" },
+                 { name: "Sub goal", current: 3, target: 10, color: "#f8d878" }]);
     document.getElementById("poll").hidden = false;
     renderPoll({ question: "Which game next?", open: true,
                  options: [{ text: "Palword", votes: 7 }, { text: "Valheim", votes: 4 }] });
-    elNpTitle.textContent = "Game Title";
-    elNpTime.textContent = "1:23:45";
-    elNpReq.textContent = "req: viewer";
     elChRows.innerHTML =
       '<div class="ch-row"><span class="num">1</span><span class="ch-txt">No Cure Spells</span></div>' +
       '<div class="ch-row"><span class="num">2</span><span class="ch-txt">Any Mage</span></div>' +
@@ -1783,6 +1745,7 @@
     // Element on/off checkboxes (add or remove blocks from the overlay).
     const elemsBox = document.getElementById("ebElems");
     for (const k of ELEMENTS) {
+      const row = document.createElement("div"); row.className = "ebElemRow";
       const lab = document.createElement("label");
       const cb = document.createElement("input");
       cb.type = "checkbox";
@@ -1796,17 +1759,32 @@
       });
       lab.appendChild(cb);
       lab.appendChild(document.createTextNode(ELEMENT_NAMES[k]));
-      elemsBox.appendChild(lab);
+      // Per-element reset: restore just this element's position & size to the default.
+      const rst = document.createElement("button");
+      rst.className = "ebElemRst"; rst.textContent = "↺";
+      rst.title = "Reset " + ELEMENT_NAMES[k] + " to its default position & size";
+      rst.addEventListener("click", (function (key) {
+        return function () {
+          const d = DEFAULT_LAYOUT[key]; if (!d) return;
+          layout[key].x = d.x; layout[key].y = d.y; layout[key].w = d.w; layout[key].h = d.h;
+          applyBox(key);
+          if (selEl === key) selectEl(key);
+          scheduleSave();
+          flashSaved("Reset " + ELEMENT_NAMES[key] + " position");
+        };
+      })(k));
+      row.appendChild(lab); row.appendChild(rst);
+      elemsBox.appendChild(row);
     }
 
     document.getElementById("ebPresetSave").addEventListener("click", savePresetClick);
     document.getElementById("ebReset").addEventListener("click", function () {
-      applyLayout(clone(DEFAULT_LAYOUT)); selectEl(selEl || "np"); scheduleSave(); flashSaved("Reset to default");
+      applyLayout(clone(DEFAULT_LAYOUT)); selectEl(selEl || "ch"); scheduleSave(); flashSaved("Reset to default");
     });
     renderPresets();
 
     for (const k of ELEMENTS) attachDragResize(k);
-    selectEl("np");
+    selectEl("ch");
   }
 
   function attachDragResize(k) {
@@ -1868,10 +1846,6 @@
   //  Init
   // =========================================================================
   function init() {
-    elNp = document.getElementById("np");
-    elNpTitle = document.getElementById("npTitle");
-    elNpTime = document.getElementById("npTime");
-    elNpReq = document.getElementById("npReq");
     elCh = document.getElementById("ch");
     elChRows = document.getElementById("chRows");
     elChatWrap = document.getElementById("chatWrap");
