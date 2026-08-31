@@ -20,7 +20,7 @@
         <BooleanToVisibilityConverter x:Key="B2V"/>
         <Style x:Key="In" TargetType="TextBox">
             <Setter Property="Background" Value="{DynamicResource ThemeSurface}"/>
-            <Setter Property="Foreground" Value="#e8e0c4"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CaretBrush" Value="{DynamicResource ThemeAccent}"/>
@@ -90,10 +90,10 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Foreground="#7a9070" FontSize="11" TextWrapping="Wrap"
+                    <TextBlock Foreground="#6f7cb5" FontSize="11" TextWrapping="Wrap"
                                Text="On-stream tallies (deaths, catchphrases, anything). Each counter keeps a SEPARATE count per game and only shows for the game you're playing. Pick its games (multi-select) and set +/- hotkeys per counter below."/>
                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                        <TextBlock Text="Editing counts for:" Foreground="#a8c488" FontSize="11" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Editing counts for:" Foreground="#8494d8" FontSize="11" VerticalAlignment="Center" Margin="0,0,6,0"/>
                         <ComboBox x:Name="EditGameCombo" Width="190" VerticalAlignment="Center"
                                   ItemsSource="{Binding EditingGames, RelativeSource={RelativeSource AncestorType=Window}}"
                                   SelectionChanged="EditGame_Changed"
@@ -156,7 +156,7 @@
 
                                     <!-- +/- hotkeys -->
                                     <StackPanel Orientation="Horizontal" Margin="26,7,0,0">
-                                        <TextBlock Text="&#9000; Hotkeys:" Foreground="#7a9070" FontSize="11"
+                                        <TextBlock Text="&#9000; Hotkeys:" Foreground="#6f7cb5" FontSize="11"
                                                    VerticalAlignment="Center" Margin="0,0,8,0"/>
                                         <Button Content="{Binding IncHotkeyDisplay}" Tag="{Binding}" Click="IncHotkey_Click"
                                                 Style="{StaticResource Btn}" Margin="0,0,2,0" MinWidth="96"
@@ -177,7 +177,7 @@
             </ScrollViewer>
 
             <!-- Live overlay preview -->
-            <Border Grid.Row="3" Margin="14,0,14,12" Background="#0a1410"
+            <Border Grid.Row="3" Margin="14,0,14,12" Background="#080e34"
                     BorderBrush="{DynamicResource ThemeAccentDeep}" BorderThickness="1" CornerRadius="8" Padding="12,8">
                 <StackPanel>
                     <TextBlock Text="OVERLAY PREVIEW" Foreground="{DynamicResource ThemeAccent}" FontSize="9"
@@ -191,7 +191,7 @@
                                 <Border Visibility="{Binding Show, Converter={StaticResource B2V}}"
                                         Background="#12241a" CornerRadius="6" Padding="10,5" Margin="0,0,8,6">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding Name}" Foreground="#cfe0bd" FontSize="12"
+                                        <TextBlock Text="{Binding Name}" Foreground="#b8c6f5" FontSize="12"
                                                    VerticalAlignment="Center" Margin="0,0,10,0"/>
                                         <TextBlock Text="{Binding Value}" Foreground="{Binding ColorBrush}"
                                                    FontSize="17" FontWeight="Bold"/>

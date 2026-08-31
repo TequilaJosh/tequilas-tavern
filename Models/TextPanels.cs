@@ -8,7 +8,7 @@ namespace GameTracker.Models
         public string Text { get; set; } = string.Empty;
         public string Font { get; set; } = string.Empty;   // "" = default (Segoe UI)
         public int Size { get; set; } = 24;                // px
-        public string Color { get; set; } = "#e8e0c4";
+        public string Color { get; set; } = "#ffffff";
         public bool Scroll { get; set; } = false;          // marquee left-scroll
         public int Speed { get; set; } = 80;               // pixels per second
         public string Image { get; set; } = string.Empty;  // local image path ("" = none)
@@ -24,14 +24,14 @@ namespace GameTracker.Models
         public string HeaderText { get; set; } = string.Empty;
         public string HeaderFont { get; set; } = string.Empty;
         public int HeaderSize { get; set; } = 28;
-        public string HeaderColor { get; set; } = "#7cc44a";
+        public string HeaderColor { get; set; } = "#9fb4ff";
         public List<TextPanelLine> Lines { get; set; } = new();
 
         // Optional bordered side blocks flanking the main panel (hidden when empty).
         public string LeftText { get; set; } = string.Empty;
         public string LeftFont { get; set; } = string.Empty;
         public int LeftSize { get; set; } = 20;
-        public string LeftColor { get; set; } = "#e8e0c4";
+        public string LeftColor { get; set; } = "#ffffff";
         public string LeftImage { get; set; } = string.Empty;      // local image path ("" = none)
         public int LeftImageWidth { get; set; } = 200;             // display width in px
         public string LeftDir { get; set; } = "v";                 // "v" vertical (default) | "h" horizontal
@@ -40,7 +40,7 @@ namespace GameTracker.Models
         public string RightText { get; set; } = string.Empty;
         public string RightFont { get; set; } = string.Empty;
         public int RightSize { get; set; } = 20;
-        public string RightColor { get; set; } = "#e8e0c4";
+        public string RightColor { get; set; } = "#ffffff";
         public string RightImage { get; set; } = string.Empty;
         public int RightImageWidth { get; set; } = 200;
         public string RightDir { get; set; } = "v";

@@ -48,6 +48,25 @@ namespace GameTracker.Services
 
         private const string WsGuid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
+        // Hard cap on a single inbound WebSocket text message (defends against a
+        // malicious local/cross-origin client sending an unbounded frame that would
+        // grow the receive buffer without limit or write a huge config to disk).
+        private const int MaxWsMessageBytes = 256 * 1024;
+
+        // Cross-Site WebSocket Hijacking guard: only accept upgrades whose Origin is
+        // this loopback server itself (the real overlay/editor pages, served from
+        // http://localhost:<port>/) or absent (a file:// overlay sends "null" / none).
+        // Any external site the streamer happens to be browsing sends its own Origin
+        // and is rejected — it can neither read the snapshot nor overwrite the layout.
+        private static bool IsAllowedOrigin(string? origin)
+        {
+            if (string.IsNullOrWhiteSpace(origin)) return true;   // file:// (Origin: null) or non-browser client
+            if (origin.Equals("null", StringComparison.OrdinalIgnoreCase)) return true;
+            var o = origin.TrimEnd('/');
+            return o.Equals($"http://localhost:{Port}", StringComparison.OrdinalIgnoreCase)
+                || o.Equals($"http://127.0.0.1:{Port}", StringComparison.OrdinalIgnoreCase);
+        }
+
         private sealed class Client
         {
             public WebSocket Socket = null!;
@@ -628,6 +647,16 @@ namespace GameTracker.Services
             if (!headers.TryGetValue("Sec-WebSocket-Key", out var key) || string.IsNullOrEmpty(key))
                 return;
 
+            // Reject cross-origin upgrades (CSWSH): a website the streamer is browsing
+            // must not be able to open this socket, read chat, or overwrite the layout.
+            headers.TryGetValue("Origin", out var origin);
+            if (!IsAllowedOrigin(origin))
+            {
+                var deny = "HTTP/1.1 403 Forbidden\r\nConnection: close\r\nContent-Length: 0\r\n\r\n";
+                try { await stream.WriteAsync(Encoding.ASCII.GetBytes(deny), ct); } catch { }
+                return;
+            }
+
             string accept = Convert.ToBase64String(
                 SHA1.HashData(Encoding.ASCII.GetBytes(key + WsGuid)));
 
@@ -689,6 +718,9 @@ namespace GameTracker.Services
                     if (r.MessageType != WebSocketMessageType.Text) continue;
 
                     sb.Append(Encoding.UTF8.GetString(buffer, 0, r.Count));
+                    // Bound the buffer: a client that streams an oversized message (never
+                    // ending, or a giant config) is dropped rather than growing memory.
+                    if (sb.Length > MaxWsMessageBytes) break;
                     if (!r.EndOfMessage) continue;
 
                     var msg = sb.ToString();
@@ -827,14 +859,14 @@ namespace GameTracker.Services
                     text = p.HeaderText ?? string.Empty,
                     font = p.HeaderFont ?? string.Empty,
                     size = p.HeaderSize,
-                    color = p.HeaderColor ?? "#7cc44a",
+                    color = p.HeaderColor ?? "#9fb4ff",
                 },
                 left = new
                 {
                     text = p.LeftText ?? string.Empty,
                     font = p.LeftFont ?? string.Empty,
                     size = p.LeftSize,
-                    color = p.LeftColor ?? "#e8e0c4",
+                    color = p.LeftColor ?? "#ffffff",
                     img = !string.IsNullOrWhiteSpace(p.LeftImage) && File.Exists(p.LeftImage),
                     imgw = Math.Clamp(p.LeftImageWidth, 20, 1600),
                     imgv = ImageVersion(p.LeftImage),
@@ -847,7 +879,7 @@ namespace GameTracker.Services
                     text = p.RightText ?? string.Empty,
                     font = p.RightFont ?? string.Empty,
                     size = p.RightSize,
-                    color = p.RightColor ?? "#e8e0c4",
+                    color = p.RightColor ?? "#ffffff",
                     img = !string.IsNullOrWhiteSpace(p.RightImage) && File.Exists(p.RightImage),
                     imgw = Math.Clamp(p.RightImageWidth, 20, 1600),
                     imgv = ImageVersion(p.RightImage),
@@ -861,7 +893,7 @@ namespace GameTracker.Services
                     text = l.Text ?? string.Empty,
                     font = l.Font ?? string.Empty,
                     size = l.Size,
-                    color = l.Color ?? "#e8e0c4",
+                    color = l.Color ?? "#ffffff",
                     scroll = l.Scroll,
                     speed = l.Speed,
                     img = !string.IsNullOrWhiteSpace(l.Image) && File.Exists(l.Image),
@@ -890,7 +922,7 @@ namespace GameTracker.Services
                     name = g.Name,
                     current = g.Current,
                     target = Math.Max(1, g.Target),
-                    color = string.IsNullOrWhiteSpace(g.Color) ? "#7cc44a" : g.Color,
+                    color = string.IsNullOrWhiteSpace(g.Color) ? "#9fb4ff" : g.Color,
                 }).ToArray();
 
         /// <summary>Push the current poll (or null to clear it) to all clients.</summary>
@@ -917,7 +949,7 @@ namespace GameTracker.Services
                 .Select(c => new
                 {
                     name = c.Name,
-                    color = string.IsNullOrWhiteSpace(c.Color) ? "#7cc44a" : c.Color,
+                    color = string.IsNullOrWhiteSpace(c.Color) ? "#9fb4ff" : c.Color,
                     games = (c.Games ?? new List<string>()).ToArray(),  // empty = all games
                     values = c.Values ?? new Dictionary<string, int>(), // per-game value; overlay picks the current game
                 }).ToArray();
@@ -1033,7 +1065,7 @@ namespace GameTracker.Services
             {
                 label = b.Label ?? string.Empty,
                 url = b.Url ?? string.Empty,
-                color = b.Color ?? "#4a7c3a",
+                color = b.Color ?? "#2438a0",
             }).ToArray();
 
             return new

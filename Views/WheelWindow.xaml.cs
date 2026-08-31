@@ -48,10 +48,10 @@ namespace GameTracker.Views
 
         private static readonly Brush[] SliceBrushes =
         {
-            Brush2("#2e4a30"), Brush2("#1a2e1c"), Brush2("#3a5a2a"), Brush2("#14241a"),
+            Brush2("#2438a0"), Brush2("#16226e"), Brush2("#3a50d8"), Brush2("#101a4e"),
         };
-        private static readonly Brush SliceRim = Brush2("#0a1410");
-        private static readonly Brush LabelBrush = Brush2("#e8e0c4");
+        private static readonly Brush SliceRim = Brush2("#080e34");
+        private static readonly Brush LabelBrush = Brush2("#ffffff");
 
         public WheelWindow(string header, IEnumerable<string> items, bool editable,
                            Action<List<string>>? onItemsChanged, Action<int>? onChosen,

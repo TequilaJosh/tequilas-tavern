@@ -12,7 +12,7 @@ namespace GameTracker.Models
     public class GameCounter
     {
         public string Name { get; set; } = string.Empty;
-        public string Color { get; set; } = "#7cc44a";
+        public string Color { get; set; } = "#9fb4ff";
         public bool Show { get; set; } = true;
 
         /// <summary>Game titles this counter appears for. Empty = every game.</summary>

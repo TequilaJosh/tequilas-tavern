@@ -227,12 +227,12 @@ namespace GameTracker.Views
         {
             private Action _changed = () => { };
             private int _index = 1;
-            private string _headerText = "", _headerFont = "", _headerColor = "#7cc44a";
+            private string _headerText = "", _headerFont = "", _headerColor = "#9fb4ff";
             private int _headerSize = 28;
-            private string _leftText = "", _leftFont = "", _leftColor = "#e8e0c4", _leftImage = "", _leftDir = "v";
+            private string _leftText = "", _leftFont = "", _leftColor = "#ffffff", _leftImage = "", _leftDir = "v";
             private int _leftSize = 20, _leftImageWidth = 200, _leftSpeed = 60;
             private bool _leftScroll;
-            private string _rightText = "", _rightFont = "", _rightColor = "#e8e0c4", _rightImage = "", _rightDir = "v";
+            private string _rightText = "", _rightFont = "", _rightColor = "#ffffff", _rightImage = "", _rightDir = "v";
             private int _rightSize = 20, _rightImageWidth = 200, _rightSpeed = 60;
             private bool _rightScroll;
             private int _opacity = 100;
@@ -319,11 +319,11 @@ namespace GameTracker.Views
                     _headerText = p.HeaderText ?? "",
                     _headerFont = p.HeaderFont ?? "",
                     _headerSize = p.HeaderSize,
-                    _headerColor = p.HeaderColor ?? "#7cc44a",
+                    _headerColor = p.HeaderColor ?? "#9fb4ff",
                     _leftText = p.LeftText ?? "",
                     _leftFont = p.LeftFont ?? "",
                     _leftSize = p.LeftSize,
-                    _leftColor = p.LeftColor ?? "#e8e0c4",
+                    _leftColor = p.LeftColor ?? "#ffffff",
                     _leftImage = p.LeftImage ?? "",
                     _leftImageWidth = Math.Clamp(p.LeftImageWidth, 20, 1600),
                     _leftDir = p.LeftDir == "h" ? "h" : "v",
@@ -332,7 +332,7 @@ namespace GameTracker.Views
                     _rightText = p.RightText ?? "",
                     _rightFont = p.RightFont ?? "",
                     _rightSize = p.RightSize,
-                    _rightColor = p.RightColor ?? "#e8e0c4",
+                    _rightColor = p.RightColor ?? "#ffffff",
                     _rightImage = p.RightImage ?? "",
                     _rightImageWidth = Math.Clamp(p.RightImageWidth, 20, 1600),
                     _rightDir = p.RightDir == "h" ? "h" : "v",
@@ -370,7 +370,7 @@ namespace GameTracker.Views
         public class LineVm : INotifyPropertyChanged
         {
             private Action _changed = () => { };
-            private string _text = "", _font = "", _color = "#e8e0c4", _image = "";
+            private string _text = "", _font = "", _color = "#ffffff", _image = "";
             private int _size = 24, _speed = 80, _imageWidth = 120;
             private bool _scroll;
 
@@ -405,7 +405,7 @@ namespace GameTracker.Views
                 _text = l.Text ?? "",
                 _font = l.Font ?? "",
                 _size = l.Size,
-                _color = l.Color ?? "#e8e0c4",
+                _color = l.Color ?? "#ffffff",
                 _scroll = l.Scroll,
                 _speed = l.Speed,
                 _image = l.Image ?? "",

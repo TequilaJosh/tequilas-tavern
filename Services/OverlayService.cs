@@ -136,14 +136,14 @@ namespace GameTracker.Services
 "<meta http-equiv=\"refresh\" content=\"1\">" +
 "<style>" +
 "html,body{margin:0;padding:8px;background:transparent;overflow:hidden;" +
-"font-family:'Segoe UI',Segoe,sans-serif;}" +
+"font-family:'Lucida Console',Consolas,monospace;}" +
 ".card{display:inline-flex;align-items:center;gap:14px;padding:12px 18px;border-radius:12px;" +
-"background:rgba(10,20,16,0.85);border:2px solid #4a7c3a;" +
-"box-shadow:0 4px 18px rgba(0,0,0,0.5);}" +
-".dot{width:13px;height:13px;border-radius:50%;background:#7cc44a;box-shadow:0 0 10px #7cc44a;}" +
-".title{font-size:26px;font-weight:700;color:#e8e0c4;}" +
-".time{font-family:Consolas,monospace;font-size:26px;font-weight:700;color:#7cc44a;}" +
-".req{font-size:15px;font-weight:600;color:#d4a437;}" +
+"background:linear-gradient(180deg,rgba(20,36,192,0.92),rgba(10,22,160,0.92));border:3px solid #ffffff;" +
+"box-shadow:inset 0 0 0 2px #8090e8,0 4px 18px rgba(0,0,0,0.5);}" +
+".dot{width:13px;height:13px;border-radius:50%;background:#9fb4ff;box-shadow:0 0 10px #9fb4ff;}" +
+".title{font-size:26px;font-weight:700;color:#ffffff;}" +
+".time{font-family:'Lucida Console',Consolas,monospace;font-size:26px;font-weight:700;color:#f8d878;}" +
+".req{font-size:15px;font-weight:600;color:#f8d878;}" +
 "</style></head><body>" + body + "</body></html>";
         }
 
@@ -171,14 +171,14 @@ namespace GameTracker.Services
 "<meta http-equiv=\"refresh\" content=\"1\">" +
 "<style>" +
 "html,body{margin:0;padding:8px;background:transparent;overflow:hidden;" +
-"font-family:'Segoe UI',Segoe,sans-serif;}" +
+"font-family:'Lucida Console',Consolas,monospace;}" +
 ".card{display:inline-block;min-width:240px;padding:12px 16px;border-radius:12px;" +
-"background:rgba(10,20,16,0.85);border:2px solid #4a7c3a;box-shadow:0 4px 18px rgba(0,0,0,0.5);}" +
-".head{font-size:15px;font-weight:700;color:#d4a437;letter-spacing:1px;margin-bottom:8px;}" +
+"background:linear-gradient(180deg,rgba(20,36,192,0.92),rgba(10,22,160,0.92));border:3px solid #ffffff;box-shadow:inset 0 0 0 2px #8090e8,0 4px 18px rgba(0,0,0,0.5);}" +
+".head{font-size:15px;font-weight:700;color:#f8d878;letter-spacing:1px;margin-bottom:8px;}" +
 ".row{display:flex;align-items:flex-start;margin:5px 0;}" +
-".num{min-width:22px;height:22px;border-radius:50%;background:#243a26;color:#7cc44a;" +
+".num{min-width:22px;height:22px;border-radius:50%;background:#1a2a6e;color:#9fb4ff;" +
 "font-weight:700;font-size:13px;text-align:center;line-height:22px;margin-right:10px;}" +
-".txt{color:#e8e0c4;font-size:18px;font-weight:600;line-height:22px;}" +
+".txt{color:#ffffff;font-size:18px;font-weight:600;line-height:22px;}" +
 "</style></head><body>" + body + "</body></html>";
         }
 
@@ -277,13 +277,13 @@ namespace GameTracker.Services
 "<meta http-equiv=\"refresh\" content=\"1\">" +
 "<style>" +
 "html,body{margin:0;padding:0;background:transparent;overflow:hidden;" +
-"font-family:'Segoe UI',Segoe,sans-serif;}" +
+"font-family:'Lucida Console',Consolas,monospace;}" +
 "#vp{position:absolute;top:0;left:0;}" +
-".box{position:absolute;inset:8px;background:rgba(10,20,16,0.92);border:2px solid #4a7c3a;" +
-"border-radius:12px;box-shadow:0 6px 22px rgba(0,0,0,0.55);box-sizing:border-box;" +
+".box{position:absolute;inset:8px;background:linear-gradient(180deg,rgba(20,36,192,0.94),rgba(10,22,160,0.94));border:3px solid #ffffff;" +
+"border-radius:8px;box-shadow:inset 0 0 0 2px #8090e8,0 6px 22px rgba(0,0,0,0.55);box-sizing:border-box;" +
 "display:flex;flex-direction:column;overflow:hidden;}" +
-".head{padding:8px 14px;color:#7cc44a;font-size:13px;font-weight:700;letter-spacing:1px;" +
-"border-bottom:1px solid #2e4a30;flex:0 0 auto;}" +
+".head{padding:8px 14px;color:#f8d878;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;" +
+"border-bottom:1px solid #8090e8;flex:0 0 auto;}" +
 ".wrap{flex:1 1 auto;display:flex;flex-direction:column;justify-content:flex-end;" +
 "padding:8px 14px;overflow:hidden;}" +
 ".row{margin:3px 0;font-size:20px;line-height:1.3;}" +
@@ -336,24 +336,24 @@ namespace GameTracker.Services
 $"<!-- For a more stable, long-session overlay use the live panel instead: http://localhost:{OverlayServer.Port}/ -->" +
 "<meta http-equiv=\"refresh\" content=\"1\">" +
 "<style>" +
-"html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:'Segoe UI',Segoe,sans-serif;}" +
+"html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:'Lucida Console',Consolas,monospace;}" +
 "#vp{position:absolute;top:0;left:0;}" +
 ".panel{position:absolute;inset:8px;display:flex;flex-direction:column;" +
-"background:rgba(10,20,16,0.92);border:2px solid #4a7c3a;border-radius:12px;" +
-"box-shadow:0 6px 22px rgba(0,0,0,0.55);box-sizing:border-box;overflow:hidden;}" +
-".sec{padding:9px 14px;border-bottom:1px solid #2e4a30;flex:0 0 auto;}" +
+"background:linear-gradient(180deg,rgba(20,36,192,0.94),rgba(10,22,160,0.94));border:3px solid #ffffff;border-radius:8px;" +
+"box-shadow:inset 0 0 0 2px #8090e8,0 6px 22px rgba(0,0,0,0.55);box-sizing:border-box;overflow:hidden;}" +
+".sec{padding:9px 14px;border-bottom:1px solid #8090e8;flex:0 0 auto;}" +
 ".sec.chlist{max-height:34%;overflow:hidden;}" +
 ".sec.chat{flex:1 1 auto;display:flex;flex-direction:column;border-bottom:0;min-height:0;}" +
-".hd{color:#7cc44a;font-size:12px;font-weight:700;letter-spacing:1px;margin-bottom:6px;}" +
+".hd{color:#f8d878;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}" +
 ".np{display:flex;align-items:center;flex-wrap:wrap;gap:10px;}" +
-".dot{width:11px;height:11px;border-radius:50%;background:#7cc44a;box-shadow:0 0 8px #7cc44a;flex:0 0 auto;}" +
-".np .title{font-size:20px;font-weight:700;color:#e8e0c4;}" +
-".np .time{font-family:Consolas,monospace;font-size:20px;font-weight:700;color:#7cc44a;margin-left:auto;}" +
-".np .req{font-size:13px;font-weight:600;color:#d4a437;flex-basis:100%;}" +
+".dot{width:11px;height:11px;border-radius:50%;background:#9fb4ff;box-shadow:0 0 8px #9fb4ff;flex:0 0 auto;}" +
+".np .title{font-size:20px;font-weight:700;color:#ffffff;}" +
+".np .time{font-family:'Lucida Console',Consolas,monospace;font-size:20px;font-weight:700;color:#f8d878;margin-left:auto;}" +
+".np .req{font-size:13px;font-weight:600;color:#f8d878;flex-basis:100%;}" +
 ".ch-row{display:flex;align-items:flex-start;margin:3px 0;}" +
-".num{min-width:20px;height:20px;border-radius:50%;background:#243a26;color:#7cc44a;font-weight:700;" +
+".num{min-width:20px;height:20px;border-radius:50%;background:#1a2a6e;color:#9fb4ff;font-weight:700;" +
 "font-size:12px;text-align:center;line-height:20px;margin-right:9px;flex:0 0 auto;}" +
-".ch-txt{color:#e8e0c4;font-size:15px;line-height:20px;}" +
+".ch-txt{color:#ffffff;font-size:15px;line-height:20px;}" +
 ".chat .wrap{flex:1 1 auto;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;padding-top:2px;}" +
 ".row{margin:3px 0;font-size:17px;line-height:1.3;}" +
 ".sym{margin-right:6px;font-weight:bold;}" +

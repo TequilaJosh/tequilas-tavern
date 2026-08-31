@@ -24,14 +24,14 @@ namespace GameTracker.Services
             var res = Application.Current?.Resources;
             if (res == null) return;
 
-            res["ThemeAccent"] = Solid(Current.Accent, "#7cc44a");
-            res["ThemeAccentDeep"] = Solid(Current.AccentDeep, "#4a7c3a");
-            res["ThemeAccent2"] = Solid(Current.Accent2, "#d4a437");
+            res["ThemeAccent"] = Solid(Current.Accent, "#9fb4ff");
+            res["ThemeAccentDeep"] = Solid(Current.AccentDeep, "#3a50d8");
+            res["ThemeAccent2"] = Solid(Current.Accent2, "#f8d878");
 
             // Surface family: lift the background base toward the tile colour (same hue),
             // so panels/borders match whatever background the theme uses.
-            var baseC = ParseColor(Current.BgBase, "#0a1410");
-            var tileC = ParseColor(Current.BgTile, "#1c2a1e");
+            var baseC = ParseColor(Current.BgBase, "#080e34");
+            var tileC = ParseColor(Current.BgTile, "#16226e");
             res["ThemeBg"] = Frozen(baseC);
             res["ThemeSurface"] = Frozen(Extrapolate(baseC, tileC, 0.6));
             res["ThemeSurface2"] = Frozen(Extrapolate(baseC, tileC, 1.6));
@@ -73,8 +73,8 @@ namespace GameTracker.Services
         // Recreates the App.xaml snake-scale DrawingBrush with themed colours.
         private static DrawingBrush BuildScaleBrush(string baseHex, string tileHex)
         {
-            var baseColor = ParseColor(baseHex, "#0a1410");
-            var tileColor = ParseColor(tileHex, "#1c2a1e");
+            var baseColor = ParseColor(baseHex, "#080e34");
+            var tileColor = ParseColor(tileHex, "#16226e");
 
             var group = new DrawingGroup();
             group.Children.Add(new GeometryDrawing(

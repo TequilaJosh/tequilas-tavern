@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows;
 using Newtonsoft.Json.Linq;
@@ -67,7 +68,8 @@ namespace GameTracker.Services
                         MessageBoxButton.YesNo, MessageBoxImage.Information) != MessageBoxResult.Yes)
                     return;
 
-                var asset = ((JArray?)release["assets"] ?? new JArray())
+                var assets = (JArray?)release["assets"] ?? new JArray();
+                var asset = assets
                     .FirstOrDefault(a => ((string?)a["name"] ?? "")
                         .EndsWith(".exe", StringComparison.OrdinalIgnoreCase));
 
@@ -81,7 +83,23 @@ namespace GameTracker.Services
                     return;
                 }
 
-                var destination = Path.Combine(Path.GetTempPath(), assetName);
+                // Only ever download from GitHub over HTTPS. The asset URL comes from the
+                // API response, but pinning host + scheme means a tampered/unexpected URL
+                // can't redirect the installer fetch to an attacker-controlled server.
+                if (!IsTrustedGitHubHttps(downloadUrl))
+                {
+                    OpenInBrowser(ReleasesPage);
+                    return;
+                }
+
+                // Strip any directory component from the asset name before using it as a
+                // local path (defence against a crafted release asset name).
+                var safeName = Path.GetFileName(assetName);
+                var destination = Path.Combine(Path.GetTempPath(), safeName);
+
+                // Optional integrity check: if the release publishes "<asset>.sha256", we
+                // verify the download against it and refuse to run a mismatched installer.
+                var expectedSha = await TryGetPublishedSha256(http, assets, assetName);
 
                 var splash = new Views.UpdatingWindow();
                 splash.Show();
@@ -110,6 +128,24 @@ namespace GameTracker.Services
                                 splash.SetStatus(
                                     $"Downloading the update…  {readSoFar / 1048576} / {total / 1048576} MB");
                             }
+                        }
+                    }
+
+                    // Refuse to launch an installer whose hash doesn't match the one the
+                    // release published (tamper / partial-download protection).
+                    if (expectedSha != null)
+                    {
+                        var actual = await ComputeSha256(destination);
+                        if (!string.Equals(actual, expectedSha, StringComparison.OrdinalIgnoreCase))
+                        {
+                            try { File.Delete(destination); } catch { }
+                            splash.Close();
+                            Views.TavernDialog.Show(
+                                "The downloaded update failed its integrity check and was discarded. " +
+                                "Please download it manually from the releases page.",
+                                "Update", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            OpenInBrowser(ReleasesPage);
+                            return;
                         }
                     }
 
@@ -163,6 +199,50 @@ namespace GameTracker.Services
         {
             try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); }
             catch { /* ignore */ }
+        }
+
+        // The installer may only be fetched from GitHub itself, over HTTPS. GitHub serves
+        // release assets from github.com and the objects.githubusercontent.com CDN.
+        private static bool IsTrustedGitHubHttps(string url)
+        {
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri)) return false;
+            if (uri.Scheme != Uri.UriSchemeHttps) return false;
+            var host = uri.Host;
+            return host.Equals("github.com", StringComparison.OrdinalIgnoreCase)
+                || host.EndsWith(".github.com", StringComparison.OrdinalIgnoreCase)
+                || host.EndsWith(".githubusercontent.com", StringComparison.OrdinalIgnoreCase);
+        }
+
+        // If the release includes a "<asset>.sha256" companion asset, fetch and return the
+        // 64-hex digest so the download can be verified before it runs. Null = none published.
+        private static async Task<string?> TryGetPublishedSha256(HttpClient http, JArray assets, string assetName)
+        {
+            try
+            {
+                var shaAsset = assets.FirstOrDefault(a =>
+                {
+                    var n = (string?)a["name"] ?? "";
+                    return n.Equals(assetName + ".sha256", StringComparison.OrdinalIgnoreCase)
+                        || n.Equals(assetName + ".sha256sum", StringComparison.OrdinalIgnoreCase);
+                });
+                var url = (string?)shaAsset?["browser_download_url"];
+                if (url == null || !IsTrustedGitHubHttps(url)) return null;
+
+                var text = await http.GetStringAsync(url);
+                // Accept "abc123…  filename" (sha256sum format) or a bare digest.
+                var token = text.Split(new[] { ' ', '\t', '\r', '\n', '*' },
+                    StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
+                return token.Length == 64 && token.All(Uri.IsHexDigit) ? token : null;
+            }
+            catch { return null; }
+        }
+
+        private static async Task<string> ComputeSha256(string path)
+        {
+            await using var fs = File.OpenRead(path);
+            using var sha = SHA256.Create();
+            var hash = await sha.ComputeHashAsync(fs);
+            return Convert.ToHexString(hash);   // uppercase hex; compared case-insensitively
         }
     }
 }

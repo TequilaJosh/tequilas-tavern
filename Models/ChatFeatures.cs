@@ -60,7 +60,7 @@ namespace GameTracker.Models
         public string ChatStyle { get; set; } = "log";      // log | boxes
         public List<string> BoxColors { get; set; } = new()
         {
-            "#7cc44a", "#d4a437", "#4aa3c4", "#c44a7c", "#9146FF",
+            "#9fb4ff", "#f8d878", "#4aa3c4", "#c44a7c", "#9146FF",
         };
 
         // Point redeems

@@ -1,0 +1,53 @@
+<Window x:Class="GameTracker.Views.ActivationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Activate Tequilas' Tavern"
+        Width="460" SizeToContent="Height"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" ResizeMode="NoResize"
+        ShowInTaskbar="True"
+        Background="{DynamicResource ScaleBrush}">
+    <Border BorderBrush="#FFFFFF" BorderThickness="3" Padding="2">
+    <Border BorderBrush="#8090E8" BorderThickness="1">
+        <StackPanel Margin="26,22">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                <Image Source="/tt-chat.ico" Width="26" Height="26" Margin="0,0,10,0"
+                       VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <TextBlock Text="ACTIVATE TEQUILAS' TAVERN"
+                           Foreground="#F8D878" FontFamily="Lucida Console, Consolas"
+                           FontSize="15" FontWeight="Bold" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <TextBlock TextWrapping="Wrap" Foreground="#ffffff" FontSize="12" Margin="0,0,0,10"
+                       Text="Paste the license key from your purchase to unlock the app. Your key is tied to this computer."/>
+
+            <TextBox x:Name="KeyBox" MinHeight="64" MaxHeight="120"
+                     TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                     FontFamily="Consolas" FontSize="12"
+                     Background="#101a4e" Foreground="#ffffff" CaretBrush="#9fb4ff"
+                     BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="8"/>
+
+            <TextBlock x:Name="ErrorText" Foreground="#e0554a" FontSize="12" Margin="0,8,0,0"
+                       TextWrapping="Wrap" Visibility="Collapsed"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,16,0,0" HorizontalAlignment="Right">
+                <Button x:Name="BuyBtn" Content="Where do I buy?" Click="Buy_Click"
+                        Background="Transparent" Foreground="#9fb0ff" BorderThickness="0"
+                        FontSize="12" Cursor="Hand" Margin="0,0,14,0" VerticalAlignment="Center"/>
+                <Button x:Name="LoadBtn" Content="Load from file…" Click="LoadFile_Click"
+                        Padding="10,6" Margin="0,0,8,0"
+                        Background="#1a2a6e" Foreground="#ffffff"
+                        BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Cursor="Hand"/>
+                <Button x:Name="QuitBtn" Content="Quit" Click="Quit_Click"
+                        Padding="12,6" Margin="0,0,8,0"
+                        Background="#1a2a6e" Foreground="#ffffff"
+                        BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Cursor="Hand"/>
+                <Button x:Name="ActivateBtn" Content="Activate" Click="Activate_Click" IsDefault="True"
+                        Padding="16,6"
+                        Background="#2438a0" Foreground="#ffffff"
+                        BorderBrush="#8090E8" BorderThickness="1" FontWeight="Bold" Cursor="Hand"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+    </Border>
+</Window>

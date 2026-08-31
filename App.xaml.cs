@@ -66,12 +66,36 @@ namespace GameTracker
                 return;
             }
 
+            // License gate: block the app until a valid, machine-bound key is activated.
+            // The activation window is the ONLY window open at this point, so with the default
+            // "shut down when the last window closes" the app would exit the moment it closes —
+            // before MainWindow is shown. Suspend that until MainWindow is up.
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+            if (!Services.LicenseService.IsActivated(out _))
+            {
+                var gate = new Views.ActivationWindow();
+                if (gate.ShowDialog() != true)   // user quit without activating
+                {
+                    Shutdown();
+                    return;
+                }
+            }
+            else
+            {
+                // Already activated: quietly re-check revocation in the background (no-op offline).
+                _ = Services.LicenseService.RevalidateAsync();
+            }
+
             // Start the live mic morph chain if the streamer has it enabled.
             try { Services.VoiceMorphService.Start(); } catch { /* engine is optional */ }
 
             var win = new MainWindow();
             MainWindow = win;
             win.Show();
+
+            // MainWindow is up — restore normal shutdown (exit when all windows are closed).
+            ShutdownMode = ShutdownMode.OnLastWindowClose;
         }
 
         private void BringToFront()

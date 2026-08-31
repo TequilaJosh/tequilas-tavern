@@ -35,7 +35,7 @@
         <!-- Custom title bar controls -->
         <Style x:Key="WindowControlButton" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#7a9070"/>
+            <Setter Property="Foreground" Value="#6f7cb5"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Width" Value="44"/>
             <Setter Property="Height" Value="36"/>
@@ -68,7 +68,7 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="#9a3a2a"/>
-                                <Setter Property="Foreground" Value="#e8e0c4"/>
+                                <Setter Property="Foreground" Value="#ffffff"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -170,7 +170,7 @@
 
         <!-- ============ Themed combo boxes ============ -->
         <Style TargetType="{x:Type ComboBoxItem}">
-            <Setter Property="Foreground" Value="#e8e0c4"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
             <Setter Property="Padding" Value="8,5"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Template">
@@ -208,7 +208,7 @@
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource ThemeAccentDeep}"/>
-                    <Setter TargetName="arrow" Property="Fill" Value="#a8e060"/>
+                    <Setter TargetName="arrow" Property="Fill" Value="#c4d4ff"/>
                 </Trigger>
                 <Trigger Property="IsChecked" Value="True">
                     <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource ThemeAccent}"/>
@@ -260,7 +260,7 @@
         </ControlTemplate>
 
         <Style TargetType="{x:Type ComboBox}">
-            <Setter Property="Foreground" Value="#e8e0c4"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
             <Setter Property="Background" Value="{DynamicResource ThemeSurface}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorder}"/>
             <Setter Property="FontSize" Value="13"/>
@@ -272,7 +272,7 @@
         <!-- ============ Themed context menus ============ -->
         <Style TargetType="{x:Type ContextMenu}">
             <Setter Property="Background" Value="{DynamicResource ThemeSurface}"/>
-            <Setter Property="Foreground" Value="#e8e0c4"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ThemeAccentDeep}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Template">
@@ -291,7 +291,7 @@
         </Style>
 
         <Style TargetType="{x:Type MenuItem}">
-            <Setter Property="Foreground" Value="#e8e0c4"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Padding" Value="12,7"/>
             <Setter Property="FontSize" Value="13"/>
@@ -308,7 +308,7 @@
                                 <Setter TargetName="bd" Property="Background" Value="{DynamicResource ThemeBorder}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Foreground" Value="#506050"/>
+                                <Setter Property="Foreground" Value="#4a5798"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

@@ -73,7 +73,7 @@ namespace GameTracker.Views
             System.Text.RegularExpressions.RegexOptions.Compiled |
             System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
-        private static readonly Brush DefaultUser = Frozen("#a8c488");
+        private static readonly Brush DefaultUser = Frozen("#8494d8");
 
         public ChatWindow()
         {
@@ -658,7 +658,7 @@ namespace GameTracker.Views
             {
                 CountText.Inlines.Clear();
                 CountText.Inlines.Add(new System.Windows.Documents.Run("\U0001F465 ")
-                { Foreground = Frozen("#7a9070") });
+                { Foreground = Frozen("#6f7cb5") });
                 if (_features.CountPerSource)
                 {
                     bool first = true;
@@ -673,13 +673,13 @@ namespace GameTracker.Views
                         { Foreground = b, FontWeight = FontWeights.Bold });
                     }
                     if (first) CountText.Inlines.Add(new System.Windows.Documents.Run("0 chatting")
-                    { Foreground = Frozen("#7a9070") });
+                    { Foreground = Frozen("#6f7cb5") });
                 }
                 else
                 {
                     CountText.Inlines.Add(new System.Windows.Documents.Run(
                         _chattersSvc.Count + " chatting")
-                    { Foreground = Frozen("#a8c488"), FontWeight = FontWeights.Bold });
+                    { Foreground = Frozen("#8494d8"), FontWeight = FontWeights.Bold });
                 }
             }
 

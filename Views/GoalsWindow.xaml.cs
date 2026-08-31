@@ -84,7 +84,7 @@ namespace GameTracker.Views
         public sealed class GoalVm : INotifyPropertyChanged
         {
             private Action _changed = () => { };
-            private string _name = "", _color = "#7cc44a";
+            private string _name = "", _color = "#9fb4ff";
             private int _current, _target = 100;
             private bool _show = true;
 
@@ -109,7 +109,7 @@ namespace GameTracker.Views
             public static GoalVm From(StreamGoal g, Action changed) => new()
             {
                 _name = g.Name, _current = g.Current, _target = Math.Max(1, g.Target),
-                _color = string.IsNullOrWhiteSpace(g.Color) ? "#7cc44a" : g.Color,
+                _color = string.IsNullOrWhiteSpace(g.Color) ? "#9fb4ff" : g.Color,
                 _show = g.Show, _changed = changed,
             };
 

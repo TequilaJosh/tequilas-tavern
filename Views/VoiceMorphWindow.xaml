@@ -18,14 +18,14 @@
 
     <Window.Resources>
         <Style x:Key="Lbl" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#a8c488"/>
+            <Setter Property="Foreground" Value="#8494d8"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Width" Value="86"/>
         </Style>
         <Style x:Key="In" TargetType="TextBox">
             <Setter Property="Background" Value="{DynamicResource ThemeSurface}"/>
-            <Setter Property="Foreground" Value="#e8e0c4"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CaretBrush" Value="{DynamicResource ThemeAccent}"/>
@@ -92,7 +92,7 @@
             <!-- Engine config -->
             <StackPanel Grid.Row="1" Margin="16,12,16,6">
                 <CheckBox x:Name="EnabledCb" Content="Enable mic morph (your mic runs through the app; normal voice when no morph is active)"
-                          Foreground="#e8e0c4" FontSize="12" Margin="0,0,0,8"
+                          Foreground="#ffffff" FontSize="12" Margin="0,0,0,8"
                           Checked="Enabled_Changed" Unchecked="Enabled_Changed"/>
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                     <TextBlock Text="Microphone" Style="{StaticResource Lbl}"/>
@@ -100,7 +100,7 @@
                     <TextBlock Text="Output" Style="{StaticResource Lbl}" Width="50"/>
                     <ComboBox x:Name="OutputBox" Width="200" SelectionChanged="Device_Changed"/>
                 </StackPanel>
-                <TextBlock Foreground="#7a9070" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"
+                <TextBlock Foreground="#6f7cb5" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"
                            Text="To get this into your stream: in OBS add an 'Application Audio Capture' source pointed at Game Tracker, and mute your raw Mic source. Pick your headphones as Output to preview privately, or 🔇 None to hear nothing (note: with None there's no audio for OBS App Capture either)."/>
                 <TextBlock x:Name="EngineStatus" Foreground="{DynamicResource ThemeAccent2}" FontSize="11" Margin="0,0,0,4"/>
 
@@ -121,7 +121,7 @@
                     <Slider x:Name="PitchSlider" Width="240" Minimum="-12" Maximum="12" Value="0"
                             IsSnapToTickEnabled="True" TickFrequency="1" VerticalAlignment="Center"
                             Foreground="{DynamicResource ThemeAccent}" ValueChanged="Pitch_Changed"/>
-                    <TextBlock x:Name="PitchVal" Text="0 st" Foreground="#e8e0c4" FontSize="12"
+                    <TextBlock x:Name="PitchVal" Text="0 st" Foreground="#ffffff" FontSize="12"
                                VerticalAlignment="Center" Margin="8,0,0,0" Width="44"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
@@ -139,7 +139,7 @@
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Text="YOUR SAVED MORPHS (use in redeems as ! commands)"
                                Foreground="{DynamicResource ThemeAccent}" FontSize="11" FontWeight="Bold" Margin="10,8,10,4"/>
-                    <TextBlock x:Name="EmptyText" DockPanel.Dock="Top" Foreground="#506050" FontSize="11"
+                    <TextBlock x:Name="EmptyText" DockPanel.Dock="Top" Foreground="#4a5798" FontSize="11"
                                Margin="10,0,10,0" Text="None yet — build one above and Save."/>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="10,4,10,10">
                         <ItemsControl x:Name="PresetList">
@@ -154,8 +154,8 @@
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Name}" Foreground="#e8e0c4" FontSize="13" FontWeight="Bold"/>
-                                                <TextBlock Text="{Binding Detail}" Foreground="#7a9070" FontSize="11"/>
+                                                <TextBlock Text="{Binding Name}" Foreground="#ffffff" FontSize="13" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding Detail}" Foreground="#6f7cb5" FontSize="11"/>
                                             </StackPanel>
                                             <Button Grid.Column="1" Content="&#9654; Activate" Tag="{Binding}" Click="Activate_Click"
                                                     Style="{StaticResource Btn}" Margin="0,0,6,0"

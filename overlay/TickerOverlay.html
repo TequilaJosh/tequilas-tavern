@@ -4,10 +4,11 @@
 <meta charset="utf-8"/>
 <title>LazerGuanas Ticker</title>
 <style>
-  :root { --accent: #7cc44a; --border: #4a7c3a; --label: #a8c488; --value: #ffffff; }
+  :root { --accent: #f8d878; --frame: #ffffff; --inner: #8090e8; --label: #9fb0ff; --value: #ffffff; }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; height: 100%; background: transparent; overflow: hidden;
-               font-family: 'Segoe UI', 'Bebas Neue', Arial, sans-serif; }
+               /* Final Fantasy 1 menu look: monospace stack. */
+               font-family: 'Lucida Console', 'Consolas', ui-monospace, 'Courier New', monospace; }
 
   /* Fixed 1280x720 design stage scaled to fit the OBS source (matches the main overlay). */
   #stage { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px;
@@ -16,9 +17,10 @@
   #bar {
     position: absolute; overflow: hidden;
     display: flex; align-items: center;
-    background: rgba(10, 20, 16, 0.86);
-    border: 2px solid var(--border); border-radius: 10px;
-    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.55);
+    /* FF1 menu window: royal-blue fill, white frame + light-blue inner rule. */
+    background: linear-gradient(180deg, #1424c0 0%, #0a16a0 100%);
+    border: 3px solid var(--frame); border-radius: 8px;
+    box-shadow: inset 0 0 0 2px var(--inner), 0 5px 18px rgba(0, 0, 0, 0.55);
     font-size: 20px;
   }
   #bar.static { justify-content: center; }
@@ -26,40 +28,40 @@
   #track { display: flex; align-items: stretch; will-change: transform; }
   .copy { display: flex; align-items: stretch; }
   .slot { display: flex; align-items: center; gap: 0.45em; padding: 0.5em 1em; white-space: nowrap; }
-  .slot + .slot { border-left: 1px solid rgba(124,196,74,0.28); }
-  .copy + .copy .slot:first-child { border-left: 1px solid rgba(124,196,74,0.28); }
+  .slot + .slot { border-left: 1px solid rgba(159,180,255,0.28); }
+  .copy + .copy .slot:first-child { border-left: 1px solid rgba(159,180,255,0.28); }
   .slot .ic { font-size: 1.1em; line-height: 1; }
   .slot .txt { display: flex; flex-direction: column; line-height: 1.15; }
   .slot .lab { font-size: 0.55em; font-weight: 700; letter-spacing: 0.06em; color: var(--label); text-transform: uppercase; }
   #bar.nolabels .lab { display: none; }
   .slot .val { font-size: 1em; font-weight: 700; color: var(--value); }
   .slot .val .amt { color: var(--accent); font-size: 0.75em; margin-left: 0.3em; }
-  .slot .val.empty { color: #6f8560; font-weight: 600; }
+  .slot .val.empty { color: #8494d8; font-weight: 600; }
   @keyframes bump { 0% { transform: scale(1); } 30% { transform: scale(1.14); color: var(--accent); } 100% { transform: scale(1); } }
   .slot.bump .val { animation: bump 0.6s ease; }
 
   /* Edit mode: selectable, draggable, resizable. */
-  body.editing #bar { cursor: move; outline: 2px dashed rgba(124,196,74,0.8); }
+  body.editing #bar { cursor: move; outline: 2px dashed rgba(159,180,255,0.8); }
   .rz { display: none; position: absolute; right: -8px; bottom: -8px; width: 16px; height: 16px;
-        border-radius: 3px; background: #7cc44a; border: 2px solid #0a1410; cursor: nwse-resize; z-index: 5; }
+        border-radius: 3px; background: #9fb4ff; border: 2px solid #080e34; cursor: nwse-resize; z-index: 5; }
   body.editing .rz { display: block; }
 
   /* Editor panel */
   #editor { position: fixed; top: 12px; left: 12px; z-index: 50; width: 300px; max-height: calc(100vh - 24px);
-            overflow: auto; background: rgba(8,16,12,0.96); color: #e8e0c4; border: 1px solid #4a7c3a;
+            overflow: auto; background: rgba(8,14,52,0.96); color: #ffffff; border: 1px solid #2438a0;
             border-radius: 10px; padding: 12px 14px; font-size: 13px; box-shadow: 0 8px 26px rgba(0,0,0,0.6); }
-  #editor h3 { margin: 0 0 2px; color: #7cc44a; font-size: 13px; }
-  #editor .hint { color: #7a9070; font-size: 11px; margin-bottom: 10px; }
+  #editor h3 { margin: 0 0 2px; color: #9fb4ff; font-size: 13px; }
+  #editor .hint { color: #8494d8; font-size: 11px; margin-bottom: 10px; }
   #editor .grp { margin-bottom: 11px; }
-  #editor .grp > label.h { display: block; color: #a8c488; font-weight: 700; font-size: 11px; text-transform: uppercase; margin-bottom: 5px; }
+  #editor .grp > label.h { display: block; color: #8494d8; font-weight: 700; font-size: 11px; text-transform: uppercase; margin-bottom: 5px; }
   #editor .kinds label { display: inline-flex; align-items: center; gap: 4px; margin: 0 10px 5px 0; cursor: pointer; }
   #editor .row { display: flex; align-items: center; gap: 8px; }
-  #editor .row .rv { margin-left: auto; color: #a8c488; min-width: 42px; text-align: right; }
-  #editor input[type=range] { flex: 1; accent-color: #7cc44a; }
-  #editor select, #editor input[type=color] { background: #14241c; color: #e8e0c4; border: 1px solid #4a7c3a; border-radius: 4px; padding: 3px 5px; }
+  #editor .row .rv { margin-left: auto; color: #8494d8; min-width: 42px; text-align: right; }
+  #editor input[type=range] { flex: 1; accent-color: #9fb4ff; }
+  #editor select, #editor input[type=color] { background: #101a4e; color: #ffffff; border: 1px solid #2438a0; border-radius: 4px; padding: 3px 5px; }
   #editor input[type=color] { padding: 1px; width: 40px; height: 26px; }
-  #editor button { background: #14241c; color: #a8c488; border: 1px solid #4a7c3a; border-radius: 4px; padding: 4px 8px; cursor: pointer; }
-  #editor .saved { color: #7cc44a; font-size: 11px; height: 14px; }
+  #editor button { background: #101a4e; color: #8494d8; border: 1px solid #2438a0; border-radius: 4px; padding: 4px 8px; cursor: pointer; }
+  #editor .saved { color: #9fb4ff; font-size: 11px; height: 14px; }
 </style>
 </head>
 <body>
@@ -85,7 +87,7 @@
   var CANVAS_W = 1280, CANVAS_H = 720;
 
   var DEFAULT_CONFIG = { kinds: ["sub", "follow", "gift"], size: 22, scroll: "off", speed: 60,
-                         bg: 86, accent: "#7cc44a", labels: true, x: 190, y: 630, w: 900, h: 62 };
+                         bg: 86, accent: "#9fb4ff", labels: true, x: 190, y: 630, w: 900, h: 62 };
   var config = Object.assign({}, DEFAULT_CONFIG);
   var latest = {};
 
@@ -98,7 +100,7 @@
     o.speed = clampNum(o.speed, 5, 1000, 60);
     o.bg = clampNum(o.bg, 0, 100, 86);
     if (o.scroll !== "rtl" && o.scroll !== "ltr") o.scroll = "off";
-    if (!/^#[0-9a-fA-F]{6}$/.test(o.accent)) o.accent = "#7cc44a";
+    if (!/^#[0-9a-fA-F]{6}$/.test(o.accent)) o.accent = "#9fb4ff";
     o.labels = o.labels !== false;
     o.x = clampNum(o.x, -400, CANVAS_W, DEFAULT_CONFIG.x);
     o.y = clampNum(o.y, -200, CANVAS_H, DEFAULT_CONFIG.y);
@@ -189,7 +191,8 @@
     bar.style.left = c.x + "px"; bar.style.top = c.y + "px";
     bar.style.width = c.w + "px"; bar.style.height = c.h + "px";
     bar.style.fontSize = c.size + "px";
-    bar.style.background = "rgba(10, 20, 16, " + (c.bg / 100) + ")";
+    bar.style.background = "linear-gradient(180deg, rgba(20, 36, 192, " + (c.bg / 100) +
+                           ") 0%, rgba(10, 22, 160, " + (c.bg / 100) + ") 100%)";
     bar.classList.toggle("nolabels", !c.labels);
     var scrolling = c.scroll !== "off";
     bar.classList.toggle("scroll", scrolling);
@@ -246,7 +249,7 @@
     var e = document.createElement("div"); e.id = "editor";
     e.innerHTML =
       '<h3>🎛 Ticker editor</h3>' +
-      '<div class="hint">Drag the bar to move it, drag the green corner to resize. Everything saves automatically. In OBS, use the plain /ticker URL.</div>' +
+      '<div class="hint">Drag the bar to move it, drag the corner handle to resize. Everything saves automatically. In OBS, use the plain /ticker URL.</div>' +
       '<div class="grp"><label class="h">Show</label><div class="kinds" id="edKinds"></div></div>' +
       '<div class="grp"><label class="h">Text size</label><div class="row"><input type="range" id="edSize" min="10" max="80"><span class="rv" id="edSizeV"></span></div></div>' +
       '<div class="grp"><label class="h">Scroll contents</label><div class="row"><select id="edScroll"><option value="off">Off (static)</option><option value="rtl">Right → Left</option><option value="ltr">Left → Right</option></select></div></div>' +

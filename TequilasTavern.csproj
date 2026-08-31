@@ -13,12 +13,15 @@
     <Version>1.0.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
-    <!-- The Node.js Discord bot lives alongside the app but is not part of the .NET build. -->
-    <DefaultItemExcludes>$(DefaultItemExcludes);discord-bot\**</DefaultItemExcludes>
+    <!-- The Node.js Discord bot, the private keygen tool, and the license API server all
+         live alongside the app but are not part of this .NET (WPF) build. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);discord-bot\**;tools\**;server\**</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <!-- Windows DPAPI (per-user encryption) for secrets at rest in settings.json. -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
     <!-- Codec-independent sound-alert playback (wav/mp3/wma/m4a/aac/flac/aiff via
          Media Foundation, plus Ogg Vorbis via NAudio.Vorbis/NVorbis). -->
     <PackageReference Include="NAudio" Version="2.2.1" />
@@ -46,5 +49,7 @@
     <EmbeddedResource Include="overlay\fonts\SaturnBoingNew.ttf" />
     <!-- Chicken "bawk" used to censor bad words in TTS. -->
     <EmbeddedResource Include="Assets\chicken.wav" />
+    <!-- Public half of the license signing key (safe to ship; verifies license keys). -->
+    <EmbeddedResource Include="Assets\license_public.xml" />
   </ItemGroup>
 </Project>

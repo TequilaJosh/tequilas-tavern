@@ -8,7 +8,7 @@ namespace GameTracker.Models
         public string Name { get; set; } = string.Empty;   // e.g. "Follower goal"
         public int Current { get; set; }
         public int Target { get; set; } = 100;
-        public string Color { get; set; } = "#7cc44a";     // bar fill colour
+        public string Color { get; set; } = "#9fb4ff";     // bar fill colour
         public bool Show { get; set; } = true;             // include on the overlay
     }
 }

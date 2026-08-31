@@ -63,7 +63,7 @@ namespace GameTracker.Views
         private void AddColor_Click(object sender, RoutedEventArgs e)
         {
             if (_colors.Count >= 10) { StatusText.Text = "Max 10 colors."; return; }
-            _colors.Add(new ColorItem { Hex = "#7cc44a" });
+            _colors.Add(new ColorItem { Hex = "#9fb4ff" });
         }
 
         private void RemoveColor_Click(object sender, RoutedEventArgs e)
@@ -259,7 +259,7 @@ namespace GameTracker.Views
 
         public class ColorItem : INotifyPropertyChanged
         {
-            private string _hex = "#7cc44a";
+            private string _hex = "#9fb4ff";
             public string Hex
             {
                 get => _hex;

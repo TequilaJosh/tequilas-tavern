@@ -165,7 +165,7 @@ namespace GameTracker.Views
                 Add(new TextBlock
                 {
                     Text = text,
-                    Foreground = Brush("#c4d4a8"), FontSize = 12, TextWrapping = TextWrapping.Wrap,
+                    Foreground = Brush("#dbe4ff"), FontSize = 12, TextWrapping = TextWrapping.Wrap,
                     LineHeight = 17, Margin = new Thickness(0, 0, 0, 4),
                 });
             }
@@ -181,7 +181,7 @@ namespace GameTracker.Views
                     Foreground = (System.Windows.Media.Brush)FindResource("ThemeAccent"),
                     FontWeight = FontWeights.Bold,
                 });
-                tb.Inlines.Add(new System.Windows.Documents.Run(text) { Foreground = Brush("#e8e0c4") });
+                tb.Inlines.Add(new System.Windows.Documents.Run(text) { Foreground = Brush("#ffffff") });
                 Add(tb);
             }
             void Img(string file)
@@ -214,13 +214,13 @@ namespace GameTracker.Views
             HelpContent.Children.Add(new TextBlock
             {
                 Text = "How to use Tequilas' Tavern",
-                Foreground = Brush("#e8e0c4"), FontSize = 16, FontWeight = FontWeights.Bold,
+                Foreground = Brush("#ffffff"), FontSize = 16, FontWeight = FontWeights.Bold,
                 Margin = new Thickness(0, 0, 0, 2),
             });
             HelpContent.Children.Add(new TextBlock
             {
                 Text = "Click a section to expand it. Hover most controls for a tooltip too.",
-                Foreground = Brush("#7a9070"), FontSize = 11, TextWrapping = TextWrapping.Wrap,
+                Foreground = Brush("#6f7cb5"), FontSize = 11, TextWrapping = TextWrapping.Wrap,
             });
 
             var btnRow = new StackPanel
@@ -441,13 +441,13 @@ namespace GameTracker.Views
             var row = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 5) };
             row.Children.Add(new TextBlock
             {
-                Text = label, Foreground = Brush("#a8c488"), FontSize = 12,
+                Text = label, Foreground = Brush("#8494d8"), FontSize = 12,
                 VerticalAlignment = VerticalAlignment.Center, Width = 128,
             });
             var swatch = new Border
             {
                 Width = 26, Height = 22, CornerRadius = new CornerRadius(3),
-                BorderBrush = Brush("#4a7c3a"), BorderThickness = new Thickness(1),
+                BorderBrush = Brush("#2438a0"), BorderThickness = new Thickness(1),
                 Background = Brush(hex), Margin = new Thickness(0, 0, 8, 0),
                 Cursor = System.Windows.Input.Cursors.Hand, ToolTip = "Pick a color",
             };
@@ -459,7 +459,7 @@ namespace GameTracker.Views
             row.Children.Add(swatch);
             row.Children.Add(new TextBlock
             {
-                Text = hex, Foreground = Brush("#e8e0c4"), FontFamily = new FontFamily("Consolas"),
+                Text = hex, Foreground = Brush("#ffffff"), FontFamily = new FontFamily("Consolas"),
                 FontSize = 12, VerticalAlignment = VerticalAlignment.Center,
             });
             return row;
@@ -679,9 +679,18 @@ namespace GameTracker.Views
 
         private void CopyTickerEditUrl_Click(object sender, RoutedEventArgs e)
         {
+            if (!OverlayServer.IsRunning)
+            {
+                OverlayStatus.Text = "Overlay server isn't running — can't open the ticker editor.";
+                return;
+            }
             var url = OverlayUrl + "ticker?edit";
-            try { Clipboard.SetText(url); OverlayStatus.Text = "Copied editor URL — open it in a browser to design the ticker; changes save & update OBS live."; }
-            catch { /* clipboard can be momentarily locked */ }
+            try
+            {
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                OverlayStatus.Text = "Opened the ticker editor in your browser — changes save & update OBS live.";
+            }
+            catch { OverlayStatus.Text = "Couldn't open a browser. Go to " + url + " manually."; }
         }
 
         private static readonly Dictionary<string, (string icon, string label)> TickerSlotDefs = new()
@@ -697,7 +706,7 @@ namespace GameTracker.Views
             TickerPreviewBar.Children.Clear();
 
             var kinds = new List<string> { "sub", "follow", "gift" };
-            string accent = "#7cc44a";
+            string accent = "#9fb4ff";
             bool labels = true;
             try
             {
@@ -820,7 +829,7 @@ namespace GameTracker.Views
             });
             void Note(string t) => HotkeysContent.Children.Add(new TextBlock
             {
-                Text = t, Foreground = Brush("#7a9070"), FontSize = 11,
+                Text = t, Foreground = Brush("#6f7cb5"), FontSize = 11,
                 TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 6),
             });
 
@@ -845,7 +854,7 @@ namespace GameTracker.Views
                 g.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
                 var lb = new TextBlock
                 {
-                    Text = label, Foreground = Brush("#e8e0c4"), FontSize = 12,
+                    Text = label, Foreground = Brush("#ffffff"), FontSize = 12,
                     VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis,
                 };
                 g.Children.Add(lb);

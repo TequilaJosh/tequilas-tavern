@@ -14,7 +14,7 @@
                 <Image Source="/tt-chat.ico" Width="24" Height="24" Margin="0,0,10,0"
                        VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                 <TextBlock Text="Updating Tequilas' Tavern"
-                           Foreground="#e8e0c4" FontSize="14" FontWeight="Bold"
+                           Foreground="#ffffff" FontSize="14" FontWeight="Bold"
                            VerticalAlignment="Center"/>
             </StackPanel>
 
@@ -23,9 +23,9 @@
                          BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1"/>
 
             <TextBlock x:Name="StatusText" Text="Starting…"
-                       Foreground="#c4d4a8" FontSize="12" Margin="0,8,0,0"/>
+                       Foreground="#dbe4ff" FontSize="12" Margin="0,8,0,0"/>
             <TextBlock Text="The app will reopen automatically when it's done."
-                       Foreground="#7a9070" FontSize="11" Margin="0,4,0,0"/>
+                       Foreground="#6f7cb5" FontSize="11" Margin="0,4,0,0"/>
         </StackPanel>
     </Border>
     </Border>

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using Newtonsoft.Json;
 using GameTracker.Models;
 
@@ -61,9 +63,13 @@ namespace GameTracker.Services
             try
             {
                 if (File.Exists(SettingsFile))
-                    return JsonConvert.DeserializeObject<AppSettings>(
-                               File.ReadAllText(SettingsFile), LoadSettings)
-                           ?? new AppSettings();
+                {
+                    var s = JsonConvert.DeserializeObject<AppSettings>(
+                                File.ReadAllText(SettingsFile), LoadSettings)
+                            ?? new AppSettings();
+                    ApplySecrets(s, Secret.Unprotect);   // decrypt tokens back to plaintext for use
+                    return s;
+                }
             }
             catch { /* fall through to defaults */ }
             return new AppSettings();
@@ -74,9 +80,76 @@ namespace GameTracker.Services
             try
             {
                 Directory.CreateDirectory(Folder);
-                File.WriteAllText(SettingsFile, JsonConvert.SerializeObject(s, Formatting.Indented));
+                // Encrypt secrets on disk, serialize, then restore the in-memory plaintext so
+                // the caller's object stays usable and secrets don't leak into other saves.
+                var restore = ApplySecrets(s, Secret.Protect);
+                try { File.WriteAllText(SettingsFile, JsonConvert.SerializeObject(s, Formatting.Indented)); }
+                finally { restore(); }
             }
             catch { /* best-effort */ }
+        }
+
+        // Runs `transform` over every secret field (token / session / webhook) and returns an
+        // action that restores their previous values. Used to encrypt just for the on-disk
+        // write, then revert the object to plaintext.
+        private static Action ApplySecrets(AppSettings s, Func<string, string> transform)
+        {
+            s.Chat ??= new ChatSettings();
+            s.Features ??= new ChatFeatureSettings();
+
+            string chatToken = s.Chat.RestreamToken, chatSsn = s.Chat.SsnSession;
+            string botToken = s.Features.BotIngestToken, hook = s.Features.DiscordWebhook;
+
+            s.Chat.RestreamToken = transform(chatToken);
+            s.Chat.SsnSession = transform(chatSsn);
+            s.Features.BotIngestToken = transform(botToken);
+            s.Features.DiscordWebhook = transform(hook);
+
+            return () =>
+            {
+                s.Chat.RestreamToken = chatToken;
+                s.Chat.SsnSession = chatSsn;
+                s.Features.BotIngestToken = botToken;
+                s.Features.DiscordWebhook = hook;
+            };
+        }
+
+        /// <summary>
+        /// Per-user encryption (Windows DPAPI) for secrets stored in settings.json. Ciphertext
+        /// is tagged "enc:v1:" so we can round-trip and, crucially, read back settings written
+        /// before encryption existed (an untagged value is treated as legacy plaintext).
+        /// </summary>
+        private static class Secret
+        {
+            private const string Tag = "enc:v1:";
+            // App-specific entropy: ties ciphertext to this app in addition to the user account.
+            private static readonly byte[] Entropy = Encoding.UTF8.GetBytes("TequilasTavern/settings/v1");
+
+            public static string Protect(string? plain)
+            {
+                if (string.IsNullOrEmpty(plain)) return string.Empty;
+                try
+                {
+                    var bytes = ProtectedData.Protect(
+                        Encoding.UTF8.GetBytes(plain), Entropy, DataProtectionScope.CurrentUser);
+                    return Tag + Convert.ToBase64String(bytes);
+                }
+                catch { return plain; }   // if DPAPI is unavailable, don't lose the value
+            }
+
+            public static string Unprotect(string? stored)
+            {
+                if (string.IsNullOrEmpty(stored)) return string.Empty;
+                if (!stored.StartsWith(Tag, StringComparison.Ordinal)) return stored; // legacy plaintext
+                try
+                {
+                    var bytes = ProtectedData.Unprotect(
+                        Convert.FromBase64String(stored.Substring(Tag.Length)),
+                        Entropy, DataProtectionScope.CurrentUser);
+                    return Encoding.UTF8.GetString(bytes);
+                }
+                catch { return string.Empty; } // wrong user / corrupt — fail closed, don't expose ciphertext
+            }
         }
 
         // Ticker banner config as raw JSON (edited live in /ticker?edit), mirroring the layout.

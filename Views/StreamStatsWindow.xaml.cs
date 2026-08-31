@@ -27,15 +27,15 @@ namespace GameTracker.Views
             });
             void Line(string t, string? accent = null) => StatsContent.Children.Add(new TextBlock
             {
-                Text = t, Foreground = Brush2(accent ?? "#e8e0c4"), FontSize = 13,
+                Text = t, Foreground = Brush2(accent ?? "#ffffff"), FontSize = 13,
                 TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 1, 0, 1),
             });
 
-            Line($"⏱ Uptime: {(int)s.Uptime.TotalHours}h {s.Uptime.Minutes}m", "#c4d4a8");
+            Line($"⏱ Uptime: {(int)s.Uptime.TotalHours}h {s.Uptime.Minutes}m", "#dbe4ff");
             Head("CHAT");
             Line($"{s.TotalMessages} messages · {s.UniqueChatters} unique chatters");
             foreach (var (platform, count) in s.ByPlatform)
-                Line($"  {OverlayService.ChatSymbol(platform)} {platform}: {count}", "#a8c488");
+                Line($"  {OverlayService.ChatSymbol(platform)} {platform}: {count}", "#8494d8");
             if (s.TopChatters.Count > 0)
             {
                 Head("TOP CHATTERS");
@@ -52,7 +52,7 @@ namespace GameTracker.Views
             {
                 Head("COMMUNITY");
                 if (s.GiftCount > 0) Line($"🎁 Gifts: {s.GiftCount}" + (s.GiftCoins > 0 ? $" · {s.GiftCoins} coins" : ""), "#f0c86a");
-                if (s.Follows > 0) Line($"➕ New followers: {s.Follows}", "#a8c488");
+                if (s.Follows > 0) Line($"➕ New followers: {s.Follows}", "#8494d8");
                 if (s.Subs > 0) Line($"⭐ New subs/members: {s.Subs}", "#c4a8e8");
                 if (s.TopGifters.Count > 0 && s.GiftCoins > 0)
                 {

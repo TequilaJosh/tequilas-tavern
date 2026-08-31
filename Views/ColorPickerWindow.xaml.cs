@@ -12,12 +12,12 @@ namespace GameTracker.Views
     public partial class ColorPickerWindow : Window
     {
         private bool _sync;   // guards slider<->hex feedback loops
-        private string _hex = "#e8e0c4";
+        private string _hex = "#ffffff";
 
         private static readonly string[] Swatches =
         {
-            // App theme
-            "#7cc44a", "#4a7c3a", "#a8c488", "#e8e0c4", "#d4a437", "#2e4a30", "#0a1410",
+            // App theme (Final Fantasy 1 menu palette)
+            "#9fb4ff", "#3a50d8", "#8494d8", "#ffffff", "#f8d878", "#2438a0", "#080e34",
             // Platform / accent
             "#9146FF", "#1f6feb", "#25F4EE", "#53FC18", "#FF69B4", "#c44a7c", "#4aa3c4",
             // Standards
@@ -32,7 +32,7 @@ namespace GameTracker.Views
         {
             InitializeComponent();
             Palette.ItemsSource = Swatches;
-            SetHex(IsHex(initialHex) ? initialHex! : "#e8e0c4");
+            SetHex(IsHex(initialHex) ? initialHex! : "#ffffff");
         }
 
         /// <summary>Show the picker; returns "#RRGGBB" or null if cancelled.</summary>

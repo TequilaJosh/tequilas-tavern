@@ -22,3 +22,13 @@ discord-bot/*.log
 discord-bot/data/
 
 pub/
+
+# License keygen — the PRIVATE signing key must never be committed or shipped.
+tools/keygen/license_private.xml
+tools/keygen/bin/
+tools/keygen/obj/
+
+# License API (Azure Functions) — build output and local secrets.
+server/LicenseApi/bin/
+server/LicenseApi/obj/
+server/LicenseApi/local.settings.json

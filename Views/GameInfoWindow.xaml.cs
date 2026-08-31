@@ -29,10 +29,10 @@ namespace GameTracker.Views
             // Status badge
             (string label, string bg, string fg) = _game.Status switch
             {
-                GameStatus.NotStarted => ("DORMANT", "#1a2620", "#7a9a8a"),
-                GameStatus.InProgress => ("HUNTING", "#1e3a1e", "#7cc44a"),
-                GameStatus.Beaten => ("DEVOURED", "#3a2a10", "#d4a437"),
-                _ => ("—", "#1c2a1e", "#c4d4a8"),
+                GameStatus.NotStarted => ("DORMANT", "#101a4e", "#8494d8"),
+                GameStatus.InProgress => ("HUNTING", "#16226e", "#9fb4ff"),
+                GameStatus.Beaten => ("DEVOURED", "#3a2a10", "#f8d878"),
+                _ => ("—", "#101a4e", "#b8c6f5"),
             };
             StatusText.Text = label;
             StatusText.Foreground = Brush(fg);

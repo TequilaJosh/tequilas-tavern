@@ -23,7 +23,7 @@ namespace GameTracker.Models
     {
         public string Label { get; set; } = string.Empty;  // e.g. "MOD" (used when no image)
         public string Url { get; set; } = string.Empty;    // badge image URL (preferred if set)
-        public string Color { get; set; } = "#4a7c3a";     // background for the text label
+        public string Color { get; set; } = "#2438a0";     // background for the text label
     }
 
     /// <summary>What kind of stream event a message represents. Chat = an ordinary message.</summary>

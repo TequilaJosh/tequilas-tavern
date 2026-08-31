@@ -13,7 +13,8 @@
 
   html, body {
     margin: 0; padding: 0; background: transparent; overflow: hidden;
-    font-family: 'Segoe UI', Segoe, system-ui, sans-serif;
+    /* Final Fantasy 1 menu look: monospace stack. */
+    font-family: 'Lucida Console', 'Consolas', ui-monospace, 'Courier New', monospace;
   }
 
   /* Row of bordered boxes: [left] [center: header/divider/lines] [right] */
@@ -25,8 +26,9 @@
 
   .pbox {
     box-sizing: border-box; overflow: hidden;
-    border: 2px solid #4a7c3a; border-radius: 12px;
-    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55);
+    /* FF1 menu window: white frame with a light-blue inner rule. */
+    border: 3px solid #ffffff; border-radius: 8px;
+    box-shadow: inset 0 0 0 2px #8090e8, 0 6px 22px rgba(0, 0, 0, 0.55);
     /* background set from JS so the streamer's opacity applies */
   }
 
@@ -58,7 +60,7 @@
   /* Header + the divider border below it */
   #hdr {
     flex: 0 0 auto; padding: 10px 16px 8px;
-    border-bottom: 2px solid #2e4a30;
+    border-bottom: 2px solid #8090e8;
     font-weight: 700; line-height: 1.25; word-break: break-word;
   }
   #hdr:empty { display: none; }
@@ -148,7 +150,7 @@
 
     el.style.fontFamily = fam(s.font);
     el.style.fontSize = (s.size || 20) + "px";
-    el.style.color = s.color || "#e8e0c4";
+    el.style.color = s.color || "#ffffff";
     el.style.display = "block";
 
     var horizontal = (s.dir === "h");
@@ -199,10 +201,11 @@
     wrap.className = hasContent ? "" : "empty";
     if (!hasContent) return;
 
-    // Background opacity (default fully opaque).
+    // FF1 royal-blue menu fill; background opacity (default fully opaque).
     var alpha = 1;
     if (typeof p.opacity === "number") alpha = Math.max(0, Math.min(100, p.opacity)) / 100;
-    var bg = "rgba(10, 20, 16, " + alpha + ")";
+    var bg = "linear-gradient(180deg, rgba(20, 36, 192, " + alpha +
+             ") 0%, rgba(10, 22, 160, " + alpha + ") 100%)";
     leftEl.style.background = bg;
     centerEl.style.background = bg;
     rightEl.style.background = bg;
@@ -215,7 +218,7 @@
     if (p.header) {
       hdr.style.fontFamily = fam(p.header.font);
       hdr.style.fontSize = (p.header.size || 28) + "px";
-      hdr.style.color = p.header.color || "#7cc44a";
+      hdr.style.color = p.header.color || "#9fb4ff";
     }
 
     while (linesEl.firstChild) linesEl.removeChild(linesEl.firstChild);
@@ -225,7 +228,7 @@
       var div = document.createElement("div");
       div.style.fontFamily = fam(ln.font);
       div.style.fontSize = (ln.size || 24) + "px";
-      div.style.color = ln.color || "#e8e0c4";
+      div.style.color = ln.color || "#ffffff";
 
       // Optional per-line image (sits before the text; stays put even on scroll lines).
       var limg = null;

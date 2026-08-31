@@ -139,7 +139,7 @@ namespace GameTracker.Views
         {
             if (sender is not Button b || b.Tag is not CounterVm v) return;
 
-            SolidColorBrush ink = Hex("#e8e0c4"), accent = Hex("#7cc44a"), border = Hex("#4a7c3a"), bg = Hex("#0c140f");
+            SolidColorBrush ink = Hex("#ffffff"), accent = Hex("#9fb4ff"), border = Hex("#2438a0"), bg = Hex("#080e34");
             bool suppress = false;
             var gameBoxes = new List<CheckBox>();
             var panel = new StackPanel { Margin = new Thickness(6) };
@@ -266,7 +266,7 @@ namespace GameTracker.Views
         public sealed class CounterVm : INotifyPropertyChanged
         {
             private Action _changed = () => { };
-            private string _name = "", _color = "#7cc44a", _editingGame = "";
+            private string _name = "", _color = "#9fb4ff", _editingGame = "";
             private bool _show = true;
             private HotkeyBinding? _inc, _dec;
             private List<string> _games = new();
@@ -318,7 +318,7 @@ namespace GameTracker.Views
             public static CounterVm From(GameCounter c, string editingGame, Action changed) => new()
             {
                 _name = c.Name,
-                _color = string.IsNullOrWhiteSpace(c.Color) ? "#7cc44a" : c.Color,
+                _color = string.IsNullOrWhiteSpace(c.Color) ? "#9fb4ff" : c.Color,
                 _show = c.Show,
                 _games = new List<string>(c.Games ?? new()),
                 _values = new Dictionary<string, int>(c.Values ?? new()),
