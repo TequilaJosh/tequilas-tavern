@@ -31,4 +31,5 @@ tools/keygen/obj/
 # License API (Azure Functions) — build output and local secrets.
 server/LicenseApi/bin/
 server/LicenseApi/obj/
+server/LicenseApi/pubout/
 server/LicenseApi/local.settings.json
