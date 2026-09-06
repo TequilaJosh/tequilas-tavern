@@ -4,18 +4,22 @@ using System.Linq;
 
 namespace GameTracker.Models
 {
-    public enum ChatSegmentKind { Text, Emote }
+    public enum ChatSegmentKind { Text, Emote, Gif }
 
-    /// <summary>A piece of a chat message: either plain text or an emote image.</summary>
+    /// <summary>A piece of a chat message: plain text, an emote image, or a GIF (Giphy).</summary>
     public class ChatSegment
     {
         public ChatSegmentKind Kind { get; set; } = ChatSegmentKind.Text;
         public string Text { get; set; } = string.Empty;   // text run, or the emote's alt/name
-        public string Url { get; set; } = string.Empty;    // emote image URL (Emote only)
+        public string Url { get; set; } = string.Empty;    // emote/GIF image URL
 
         public static ChatSegment PlainText(string t) => new() { Kind = ChatSegmentKind.Text, Text = t };
         public static ChatSegment Emote(string url, string alt) =>
             new() { Kind = ChatSegmentKind.Emote, Url = url, Text = alt };
+        // GIFs (e.g. Twitch's Giphy picker) render large and inline. Text is kept empty
+        // so a GIF-only message reads as blank for TTS/matching.
+        public static ChatSegment Gif(string url) =>
+            new() { Kind = ChatSegmentKind.Gif, Url = url, Text = string.Empty };
     }
 
     /// <summary>A chat badge: an image (Url) if available, else a short colored text label.</summary>
@@ -23,7 +27,7 @@ namespace GameTracker.Models
     {
         public string Label { get; set; } = string.Empty;  // e.g. "MOD" (used when no image)
         public string Url { get; set; } = string.Empty;    // badge image URL (preferred if set)
-        public string Color { get; set; } = "#2438a0";     // background for the text label
+        public string Color { get; set; } = "#4a7c3a";     // background for the text label
     }
 
     /// <summary>What kind of stream event a message represents. Chat = an ordinary message.</summary>
