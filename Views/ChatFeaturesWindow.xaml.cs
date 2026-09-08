@@ -44,6 +44,7 @@ namespace GameTracker.Views
             BalanceCmdBox.Text = string.IsNullOrWhiteSpace(f.BalanceCommand) ? "!points" : f.BalanceCommand;
             StyleLogRb.IsChecked = f.ChatStyle != "boxes";
             StyleBoxRb.IsChecked = f.ChatStyle == "boxes";
+            GifsCb.IsChecked = f.ShowGifs;
 
             foreach (var c in f.BoxColors) _colors.Add(new ColorItem { Hex = c });
             ColorList.ItemsSource = _colors;
@@ -199,6 +200,7 @@ namespace GameTracker.Views
                 StreakBonusPerDay = ParseInt(StreakBonusBox.Text, 10, 0, 1000000),
                 BalanceCommand = NormalizeCommand(BalanceCmdBox.Text),
                 ChatStyle = StyleBoxRb.IsChecked == true ? "boxes" : "log",
+                ShowGifs = GifsCb.IsChecked == true,
                 BoxColors = _colors.Select(c => c.Hex.Trim())
                                    .Where(IsHex).Take(10).ToList(),
                 Redeems = BuildRedeems(),

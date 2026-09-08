@@ -34,10 +34,15 @@ namespace GameTracker.Services.Chat
             return null;
         }
 
+        /// <summary>Streamer toggle (Chat Features → "Show Giphy GIFs"). When false, GIF links
+        /// stay as plain text instead of rendering as images. Synced by SettingsService.</summary>
+        public static bool GifsEnabled = true;
+
         // Pull GIF links out of text segments into their own Gif segments so they render
         // as images. Non-GIF links stay as text (normal clickable/plain links).
         public static List<ChatSegment> ExtractGifs(List<ChatSegment> segs)
         {
+            if (!GifsEnabled) return segs;   // streamer disabled GIFs → leave links as text
             var outSegs = new List<ChatSegment>();
             void addPlain(string t)
             {

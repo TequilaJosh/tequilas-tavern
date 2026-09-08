@@ -56,6 +56,10 @@ namespace GameTracker.Models
         public int FirstChatterBonus { get; set; } = 50;
         public int StreakBonusPerDay { get; set; } = 10;
 
+        // Show Giphy GIFs (Twitch's Giphy chat integration, and any Giphy link a chatter
+        // pastes) as animated images inline, instead of a bare link. Off = leave the link as text.
+        public bool ShowGifs { get; set; } = true;
+
         // Chat style
         public string ChatStyle { get; set; } = "log";      // log | boxes
         public List<string> BoxColors { get; set; } = new()

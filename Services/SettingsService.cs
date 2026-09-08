@@ -342,6 +342,7 @@ namespace GameTracker.Services
             // Repair files written before the append-duplication fix (cap is 10 colors).
             if (f.BoxColors.Count > 10)
                 f.BoxColors = f.BoxColors.GetRange(0, 10);
+            Chat.ChatText.GifsEnabled = f.ShowGifs;   // keep the GIF renderer in sync with the setting
             return f;
         }
 
@@ -350,6 +351,7 @@ namespace GameTracker.Services
             var s = LoadAll();
             s.Features = features;
             SaveAll(s);
+            Chat.ChatText.GifsEnabled = features?.ShowGifs ?? true;
         }
 
         public static List<TextPanel> LoadTextPanels() => LoadAll().TextPanels ?? new List<TextPanel>();

@@ -205,6 +205,9 @@
                         <RadioButton x:Name="StyleBoxRb" Content="Boxes (colored bubbles)" Foreground="#ffffff"
                                      FontSize="12"/>
                     </StackPanel>
+                    <CheckBox x:Name="GifsCb" Content="Show Giphy GIFs inline (Twitch GIF picker &amp; pasted links)"
+                              Foreground="#ffffff" FontSize="12" Margin="0,8,0,0"
+                              ToolTip="Off = show the link as text instead of an animated GIF (avoids GIF spam/NSFW abuse)."/>
                     <TextBlock Text="Box colors (rotate per message, up to 10):" Foreground="#8494d8"
                                FontSize="11" Margin="0,8,0,4"/>
                     <ItemsControl x:Name="ColorList">
