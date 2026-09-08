@@ -27,11 +27,12 @@ namespace GameTracker.Services
     {
         public const string KeyPrefix = "TT1";   // must match the keygen tool's Prefix
 
-        // Your deployed license API (Azure Function), e.g. "https://tt-license.azurewebsites.net/api".
-        // Leave EMPTY to run fully offline (signature + machine binding only, no server checks).
-        // When set, activation is enforced online (activation limits + revocation); launches still
-        // work offline afterward using the stored, machine-bound record.
-        public const string ApiBaseUrl = "";
+        // Your deployed license API (Azure Function). Leave EMPTY to run fully offline
+        // (signature + machine binding only, no server checks). When set, activation is
+        // enforced online (activation limits + revocation); launches still work offline
+        // afterward using the stored, machine-bound record.
+        public const string ApiBaseUrl =
+            "https://tt-license-tequilajosh-gyh3grddd8hughga.eastus-01.azurewebsites.net/api";
 
         private static bool OnlineEnabled =>
             ApiBaseUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
