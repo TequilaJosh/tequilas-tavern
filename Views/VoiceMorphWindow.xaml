@@ -91,17 +91,22 @@
 
             <!-- Engine config -->
             <StackPanel Grid.Row="1" Margin="16,12,16,6">
-                <CheckBox x:Name="EnabledCb" Content="Enable mic morph (your mic runs through the app; normal voice when no morph is active)"
-                          Foreground="#ffffff" FontSize="12" Margin="0,0,0,8"
-                          Checked="Enabled_Changed" Unchecked="Enabled_Changed"/>
+                <CheckBox x:Name="EnabledCb" Margin="0,0,0,8" VerticalContentAlignment="Center"
+                          Checked="Enabled_Changed" Unchecked="Enabled_Changed">
+                    <TextBlock Foreground="#ffffff" FontSize="12" TextWrapping="Wrap" MaxWidth="520"
+                               Text="Use the app as my audio source (always on) — runs your mic through the app so OBS can capture it. Your normal voice by default; morphs apply when triggered. Stays live and auto-recovers while the app is open."/>
+                </CheckBox>
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                     <TextBlock Text="Microphone" Style="{StaticResource Lbl}"/>
                     <ComboBox x:Name="InputBox" Width="200" Margin="0,0,10,0" SelectionChanged="Device_Changed"/>
                     <TextBlock Text="Output" Style="{StaticResource Lbl}" Width="50"/>
                     <ComboBox x:Name="OutputBox" Width="200" SelectionChanged="Device_Changed"/>
                 </StackPanel>
-                <TextBlock Foreground="#6f7cb5" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"
-                           Text="To get this into your stream: in OBS add an 'Application Audio Capture' source pointed at Game Tracker, and mute your raw Mic source. Pick your headphones as Output to preview privately, or 🔇 None to hear nothing (note: with None there's no audio for OBS App Capture either)."/>
+                <TextBlock Foreground="#6f7cb5" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"
+                           Text="To get this into your stream: in OBS add an 'Application Audio Capture' source pointed at Tequilas' Tavern, and mute your raw Mic source. For OBS to actually hear it, set Output to '🎧 System default' — OBS App Capture only picks up audio sent to your default device. Pick a specific device only to preview privately (OBS won't get it), or 🔇 None for no playback at all."/>
+                <TextBlock x:Name="OutputWarn" Foreground="#f8d878" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"
+                           Visibility="Collapsed"
+                           Text="⚠ This Output is a specific device, not your system default. OBS 'Application Audio Capture' usually only hears audio sent to the default device — so OBS will likely get silence. Switch Output to '🎧 System default' (or route to a virtual audio cable and capture that)."/>
                 <TextBlock x:Name="EngineStatus" Foreground="{DynamicResource ThemeAccent2}" FontSize="11" Margin="0,0,0,4"/>
 
                 <Border Background="{DynamicResource ThemeBorder}" Height="1" Margin="0,4,0,10"/>

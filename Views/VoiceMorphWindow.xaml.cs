@@ -14,9 +14,15 @@ namespace GameTracker.Views
             { "none", "robot", "whisper", "echo", "distortion", "flanger", "vibrato", "tremolo", "autowah" };
 
         private const string NoneLabel = "🔇 None — don't play back to me";
+        // Routing to the Windows default render endpoint (empty OutputDevice) is what OBS
+        // "Application Audio Capture" can actually hear, so it's the recommended choice.
+        private const string DefaultLabel = "🎧 System default (best for OBS capture)";
 
         private readonly ObservableCollection<Row> _rows = new();
         private bool _ready;
+
+        // Refreshes the LIVE/off status while the window is open so watchdog recovery shows live.
+        private System.Windows.Threading.DispatcherTimer? _statusTimer;
 
         public VoiceMorphWindow()
         {
@@ -26,15 +32,17 @@ namespace GameTracker.Views
             EnabledCb.IsChecked = s.Enabled;
 
             InputBox.ItemsSource = VoiceMorphService.InputDevices();
-            var outputs = new System.Collections.Generic.List<string> { NoneLabel };
+            var outputs = new System.Collections.Generic.List<string> { DefaultLabel, NoneLabel };
             outputs.AddRange(VoiceMorphService.OutputDevices());
             OutputBox.ItemsSource = outputs;
             InputBox.SelectedItem = InputBox.Items.OfType<string>().FirstOrDefault(d => d == s.InputDevice)
                                     ?? InputBox.Items.OfType<string>().FirstOrDefault();
             OutputBox.SelectedItem = s.OutputDevice == VoiceMorphService.NoneOutput
                 ? NoneLabel
-                : outputs.FirstOrDefault(d => d == s.OutputDevice)
-                  ?? outputs.Skip(1).FirstOrDefault() ?? NoneLabel;
+                : string.IsNullOrEmpty(s.OutputDevice)
+                    ? DefaultLabel
+                    : outputs.FirstOrDefault(d => d == s.OutputDevice) ?? DefaultLabel;
+            UpdateOutputWarning();
 
             EffectBox.ItemsSource = EffectKeys;
             EffectBox.SelectedIndex = 0;
@@ -43,19 +51,50 @@ namespace GameTracker.Views
             PresetList.ItemsSource = _rows;
             RefreshEmpty();
             UpdateEngineStatus();
+            _statusTimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _statusTimer.Tick += (_, _) => UpdateEngineStatus();
+            _statusTimer.Start();
+            Closed += (_, _) => _statusTimer?.Stop();
             _ready = true;
         }
 
         private void RefreshEmpty() =>
             EmptyText.Visibility = _rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 
-        private void UpdateEngineStatus() =>
-            EngineStatus.Text = VoiceMorphService.IsRunning
-                ? "Mic chain running" +
-                  (VoiceMorphService.ActiveMorph.Length > 0 ? $" — morph active: {VoiceMorphService.ActiveMorph}" : " (normal voice)")
-                : (string.IsNullOrEmpty(VoiceMorphService.LastError)
-                    ? "Mic chain off."
-                    : "Mic chain error: " + VoiceMorphService.LastError);
+        private void UpdateEngineStatus()
+        {
+            string text; string hex;
+            if (VoiceMorphService.IsRunning)
+            {
+                bool morph = VoiceMorphService.ActiveMorph.Length > 0;
+                text = morph
+                    ? $"🟢 LIVE — morph active: {VoiceMorphService.ActiveMorph}"
+                    : "🟢 LIVE — the app is your audio source (normal voice).";
+                hex = "#7fd47f";
+            }
+            else if (!string.IsNullOrEmpty(VoiceMorphService.LastError))
+            {
+                text = "⚠ Audio problem: " + VoiceMorphService.LastError + " — retrying…";
+                hex = "#f8d878";
+            }
+            else
+            {
+                text = "⚪ Off — tick the box above to go live as an audio source.";
+                hex = "#8494d8";
+            }
+            EngineStatus.Text = text;
+            EngineStatus.Foreground = new System.Windows.Media.SolidColorBrush(
+                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(hex));
+        }
+
+        // Warn when a specific device is chosen — OBS Application Audio Capture can't hear it.
+        private void UpdateOutputWarning()
+        {
+            var output = OutputBox.SelectedItem as string ?? string.Empty;
+            bool specific = output != DefaultLabel && output != NoneLabel && output.Length > 0;
+            if (OutputWarn != null)
+                OutputWarn.Visibility = specific ? Visibility.Visible : Visibility.Collapsed;
+        }
 
         // ---- engine config ----
 
@@ -65,7 +104,9 @@ namespace GameTracker.Views
             s.Enabled = EnabledCb.IsChecked == true;
             s.InputDevice = InputBox.SelectedItem as string ?? string.Empty;
             var output = OutputBox.SelectedItem as string ?? string.Empty;
-            s.OutputDevice = output == NoneLabel ? VoiceMorphService.NoneOutput : output;
+            s.OutputDevice = output == NoneLabel ? VoiceMorphService.NoneOutput
+                           : output == DefaultLabel ? string.Empty   // empty = Windows default render endpoint
+                           : output;
             SettingsService.SaveMorph(s);
         }
 
@@ -82,6 +123,7 @@ namespace GameTracker.Views
         {
             if (!_ready) return;
             SaveEngineSettings();
+            UpdateOutputWarning();
             if (EnabledCb.IsChecked == true) { VoiceMorphService.Start(); UpdateEngineStatus(); }
         }
 
