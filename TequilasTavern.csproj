@@ -10,9 +10,9 @@
     <ApplicationIcon>tt-chat.ico</ApplicationIcon>
     <Product>Tequilas' Tavern</Product>
     <AssemblyTitle>Tequilas' Tavern</AssemblyTitle>
-    <Version>1.0.1</Version>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
     <!-- The Node.js Discord bot, the private keygen tool, and the license API server all
          live alongside the app but are not part of this .NET (WPF) build. -->
     <DefaultItemExcludes>$(DefaultItemExcludes);discord-bot\**;tools\**;server\**</DefaultItemExcludes>
