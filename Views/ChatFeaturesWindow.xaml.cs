@@ -38,13 +38,24 @@ namespace GameTracker.Views
                 if (!MorphChoicesShared.Contains(d)) MorphChoicesShared.Add(d);
         }
 
-        // Overload for the Control Center's Points & Redeems entry. This window isn't tab-split,
-        // so it opens the full chat-features window regardless of pointsTab.
-        public ChatFeaturesWindow(bool pointsTab) : this() { }
+        // Open straight to the Points & Redeems tab (from the Control Center's Points entry).
+        public ChatFeaturesWindow(bool pointsTab) : this()
+        {
+            if (pointsTab) TabPoints.IsChecked = true;
+        }
+
+        private void CfTab_Changed(object sender, RoutedEventArgs e)
+        {
+            if (PanelGeneral == null || PanelPoints == null) return;   // during init
+            bool points = TabPoints.IsChecked == true;
+            PanelGeneral.Visibility = points ? Visibility.Collapsed : Visibility.Visible;
+            PanelPoints.Visibility = points ? Visibility.Visible : Visibility.Collapsed;
+        }
 
         public ChatFeaturesWindow()
         {
             InitializeComponent();
+            TabGeneral.IsChecked = true;
             var f = SettingsService.LoadChatFeatures();
 
             ShowCountCb.IsChecked = f.ShowCount;
