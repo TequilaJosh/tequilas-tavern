@@ -81,9 +81,9 @@
             <!-- Version banner -->
             <StackPanel Grid.Row="1" Margin="22,16,22,6">
                 <TextBlock Text="A new version of Tequilas' Tavern is ready"
-                           Foreground="#ffffff" FontSize="16" FontWeight="Bold" TextWrapping="Wrap"/>
+                           Foreground="{DynamicResource ThemeText}" FontSize="16" FontWeight="Bold" TextWrapping="Wrap"/>
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <TextBlock x:Name="FromVer" Foreground="#8494d8" FontSize="12" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="FromVer" Foreground="{DynamicResource ThemeTextDim}" FontSize="12" VerticalAlignment="Center"/>
                     <TextBlock Text="  &#8594;  " Foreground="{DynamicResource ThemeAccent}" FontSize="12"
                                FontWeight="Bold" VerticalAlignment="Center"/>
                     <TextBlock x:Name="ToVer" Foreground="{DynamicResource ThemeAccent}" FontSize="13"

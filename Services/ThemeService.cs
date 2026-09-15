@@ -28,6 +28,11 @@ namespace GameTracker.Services
             res["ThemeAccentDeep"] = Solid(Current.AccentDeep, "#3a50d8");
             res["ThemeAccent2"] = Solid(Current.Accent2, "#f8d878");
 
+            // Text family — lets the Light theme use dark text on a light background.
+            res["ThemeText"] = Solid(Current.Text, "#ffffff");
+            res["ThemeTextDim"] = Solid(Current.TextDim, "#8494d8");
+            res["ThemeTextFaint"] = Solid(Current.TextFaint, "#6f7cb5");
+
             // Surface family: lift the background base toward the tile colour (same hue),
             // so panels/borders match whatever background the theme uses.
             var baseC = ParseColor(Current.BgBase, "#080e34");

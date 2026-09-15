@@ -19,7 +19,7 @@
     <Window.Resources>
         <Style x:Key="RangeButton" TargetType="Button">
             <Setter Property="Background" Value="{DynamicResource ThemeSurface2}"/>
-            <Setter Property="Foreground" Value="#dbe4ff"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeText}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="12,5"/>
             <Setter Property="FontSize" Value="12"/>
@@ -100,7 +100,7 @@
 
             <TextBox x:Name="RecapText" Grid.Row="2"
                      IsReadOnly="True" TextWrapping="NoWrap"
-                     Background="{DynamicResource ThemeSurface}" Foreground="#dbe4ff"
+                     Background="{DynamicResource ThemeSurface}" Foreground="{DynamicResource ThemeText}"
                      BorderThickness="0" Padding="14"
                      FontFamily="Consolas" FontSize="13"
                      VerticalScrollBarVisibility="Auto"

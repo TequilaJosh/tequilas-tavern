@@ -527,6 +527,15 @@ namespace GameTracker.Views
 
         private static SolidColorBrush Brush(string hex)
         {
+            // Map the app's standard text hexes to the live theme so Light mode stays readable.
+            var key = hex.ToLowerInvariant() switch
+            {
+                "#ffffff" or "#dbe4ff" => "ThemeText",
+                "#8494d8" => "ThemeTextDim",
+                "#6f7cb5" or "#4a5798" => "ThemeTextFaint",
+                _ => null,
+            };
+            if (key != null && Application.Current?.Resources[key] is SolidColorBrush tb) return tb;
             try { return new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex)); }
             catch { return new SolidColorBrush(Colors.Gray); }
         }

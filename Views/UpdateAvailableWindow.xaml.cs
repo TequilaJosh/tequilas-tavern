@@ -103,8 +103,19 @@ namespace GameTracker.Views
             Margin = new Thickness(0, 1, 0, 3),
         };
 
-        private static SolidColorBrush Brush(string hex) =>
-            new((Color)ColorConverter.ConvertFromString(hex));
+        private static SolidColorBrush Brush(string hex)
+        {
+            // Map the app's standard text hexes to the live theme so Light mode stays readable.
+            var key = hex.ToLowerInvariant() switch
+            {
+                "#ffffff" or "#dbe4ff" => "ThemeText",
+                "#8494d8" => "ThemeTextDim",
+                "#6f7cb5" or "#4a5798" => "ThemeTextFaint",
+                _ => null,
+            };
+            if (key != null && Application.Current?.Resources[key] is SolidColorBrush tb) return tb;
+            return new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex));
+        }
 
         private void Update_Click(object sender, RoutedEventArgs e) { DialogResult = true; Close(); }
         private void Later_Click(object sender, RoutedEventArgs e) { DialogResult = false; Close(); }

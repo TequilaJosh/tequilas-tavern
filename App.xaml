@@ -27,6 +27,10 @@
         <SolidColorBrush x:Key="ThemeSurface"    Color="#101a4e"/>
         <SolidColorBrush x:Key="ThemeSurface2"   Color="#1a2a6e"/>
         <SolidColorBrush x:Key="ThemeBorder"     Color="#2438a0"/>
+        <!-- Text family (light-on-dark by default; the Light theme flips these to dark) -->
+        <SolidColorBrush x:Key="ThemeText"       Color="#ffffff"/>
+        <SolidColorBrush x:Key="ThemeTextDim"    Color="#8494d8"/>
+        <SolidColorBrush x:Key="ThemeTextFaint"  Color="#6f7cb5"/>
 
         <!-- FF1 look: windows are a flat menu-blue (key kept for compatibility;
              ThemeService re-points it at the theme's background colour). -->
@@ -35,7 +39,7 @@
         <!-- Custom title bar controls -->
         <Style x:Key="WindowControlButton" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#6f7cb5"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextFaint}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Width" Value="44"/>
             <Setter Property="Height" Value="36"/>
@@ -68,7 +72,7 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="#9a3a2a"/>
-                                <Setter Property="Foreground" Value="#ffffff"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ThemeText}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -170,7 +174,7 @@
 
         <!-- ============ Themed combo boxes ============ -->
         <Style TargetType="{x:Type ComboBoxItem}">
-            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeText}"/>
             <Setter Property="Padding" Value="8,5"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Template">
@@ -260,7 +264,7 @@
         </ControlTemplate>
 
         <Style TargetType="{x:Type ComboBox}">
-            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeText}"/>
             <Setter Property="Background" Value="{DynamicResource ThemeSurface}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorder}"/>
             <Setter Property="FontSize" Value="13"/>
@@ -272,7 +276,7 @@
         <!-- ============ Themed context menus ============ -->
         <Style TargetType="{x:Type ContextMenu}">
             <Setter Property="Background" Value="{DynamicResource ThemeSurface}"/>
-            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeText}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ThemeAccentDeep}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Template">
@@ -291,7 +295,7 @@
         </Style>
 
         <Style TargetType="{x:Type MenuItem}">
-            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeText}"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Padding" Value="12,7"/>
             <Setter Property="FontSize" Value="13"/>
@@ -308,7 +312,7 @@
                                 <Setter TargetName="bd" Property="Background" Value="{DynamicResource ThemeBorder}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Foreground" Value="#4a5798"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ThemeTextFaint}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

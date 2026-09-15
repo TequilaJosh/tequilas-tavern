@@ -18,13 +18,13 @@
                            FontSize="15" FontWeight="Bold" VerticalAlignment="Center"/>
             </StackPanel>
 
-            <TextBlock TextWrapping="Wrap" Foreground="#ffffff" FontSize="12" Margin="0,0,0,10"
+            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource ThemeText}" FontSize="12" Margin="0,0,0,10"
                        Text="Paste the license key from your purchase to unlock the app. Your key is tied to this computer."/>
 
             <TextBox x:Name="KeyBox" MinHeight="64" MaxHeight="120"
                      TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
                      FontFamily="Consolas" FontSize="12"
-                     Background="#101a4e" Foreground="#ffffff" CaretBrush="#9fb4ff"
+                     Background="#101a4e" Foreground="{DynamicResource ThemeText}" CaretBrush="#9fb4ff"
                      BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="8"/>
 
             <TextBlock x:Name="ErrorText" Foreground="#e0554a" FontSize="12" Margin="0,8,0,0"
@@ -36,15 +36,15 @@
                         FontSize="12" Cursor="Hand" Margin="0,0,14,0" VerticalAlignment="Center"/>
                 <Button x:Name="LoadBtn" Content="Load from file…" Click="LoadFile_Click"
                         Padding="10,6" Margin="0,0,8,0"
-                        Background="#1a2a6e" Foreground="#ffffff"
+                        Background="#1a2a6e" Foreground="{DynamicResource ThemeText}"
                         BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Cursor="Hand"/>
                 <Button x:Name="QuitBtn" Content="Quit" Click="Quit_Click"
                         Padding="12,6" Margin="0,0,8,0"
-                        Background="#1a2a6e" Foreground="#ffffff"
+                        Background="#1a2a6e" Foreground="{DynamicResource ThemeText}"
                         BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Cursor="Hand"/>
                 <Button x:Name="ActivateBtn" Content="Activate" Click="Activate_Click" IsDefault="True"
                         Padding="16,6"
-                        Background="#2438a0" Foreground="#ffffff"
+                        Background="#2438a0" Foreground="{DynamicResource ThemeText}"
                         BorderBrush="#8090E8" BorderThickness="1" FontWeight="Bold" Cursor="Hand"/>
             </StackPanel>
         </StackPanel>
