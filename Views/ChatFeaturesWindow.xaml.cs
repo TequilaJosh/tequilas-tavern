@@ -38,6 +38,10 @@ namespace GameTracker.Views
                 if (!MorphChoicesShared.Contains(d)) MorphChoicesShared.Add(d);
         }
 
+        // Overload for the Control Center's Points & Redeems entry. This window isn't tab-split,
+        // so it opens the full chat-features window regardless of pointsTab.
+        public ChatFeaturesWindow(bool pointsTab) : this() { }
+
         public ChatFeaturesWindow()
         {
             InitializeComponent();

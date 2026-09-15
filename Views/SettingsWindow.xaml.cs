@@ -92,11 +92,22 @@ namespace GameTracker.Views
 
         private void Nav_Click(object sender, RoutedEventArgs e)
         {
-            NavAppearance.Tag = NavChat.Tag = NavOverlay.Tag = NavHelp.Tag = NavBackup.Tag = NavHotkeys.Tag = null;
-            PanelAppearance.Visibility = PanelChat.Visibility = PanelOverlay.Visibility =
-                PanelHelp.Visibility = PanelBackup.Visibility = PanelHotkeys.Visibility = Visibility.Collapsed;
+            // Editor entries open their own editor rather than switching an inline panel,
+            // so they keep the current page visible behind the editor window.
+            if (sender == NavPoints) { OpenFeatures(true); return; }
+            if (sender == NavVoiceMorph) { VoiceMorph_Click(sender, e); return; }
+            if (sender == NavGoals) { Goals_Click(sender, e); return; }
+            if (sender == NavCounters) { Counters_Click(sender, e); return; }
+            if (sender == NavTextOverlays) { TextPanels_Click(sender, e); return; }
 
-            if (sender == NavChat) { NavChat.Tag = "active"; PanelChat.Visibility = Visibility.Visible; }
+            NavAppearance.Tag = NavChat.Tag = NavVoice.Tag = NavAlerts.Tag = NavOverlay.Tag =
+                NavHelp.Tag = NavBackup.Tag = NavHotkeys.Tag = null;
+            PanelAppearance.Visibility = PanelChat.Visibility = PanelVoice.Visibility =
+                PanelAlerts.Visibility = PanelOverlay.Visibility = PanelHelp.Visibility = PanelBackup.Visibility = PanelHotkeys.Visibility = Visibility.Collapsed;
+
+            if (sender == NavVoice) { NavVoice.Tag = "active"; PanelVoice.Visibility = Visibility.Visible; }
+            else if (sender == NavAlerts) { NavAlerts.Tag = "active"; PanelAlerts.Visibility = Visibility.Visible; }
+            else if (sender == NavAppearance) { NavAppearance.Tag = "active"; PanelAppearance.Visibility = Visibility.Visible; }
             else if (sender == NavOverlay) { NavOverlay.Tag = "active"; PanelOverlay.Visibility = Visibility.Visible; RenderTickerPreview(); }
             else if (sender == NavBackup) { NavBackup.Tag = "active"; PanelBackup.Visibility = Visibility.Visible; }
             else if (sender == NavHotkeys)
@@ -109,12 +120,25 @@ namespace GameTracker.Views
                 NavHelp.Tag = "active"; PanelHelp.Visibility = Visibility.Visible;
                 BuildHelp();
             }
-            else { NavAppearance.Tag = "active"; PanelAppearance.Visibility = Visibility.Visible; }
+            else { NavChat.Tag = "active"; PanelChat.Visibility = Visibility.Visible; }
         }
 
         // ---- how-to guides ----
 
         private bool _helpBuilt;
+        // Section title → an action that expands it and scrolls it into view (for deep-links).
+        private readonly Dictionary<string, Action> _helpSections =
+            new(StringComparer.OrdinalIgnoreCase);
+        public const string VoiceMorphObsSection = "Voice Morph → OBS (get it on stream)";
+
+        /// <summary>Open the How-To page and jump to a section by title (used by editors' help buttons).</summary>
+        public void ShowHelpSection(string title)
+        {
+            Nav_Click(NavHelp, new RoutedEventArgs());   // switch to the How-To page + build it
+            Activate();
+            if (_helpSections.TryGetValue(title, out var open))
+                Dispatcher.BeginInvoke(open, System.Windows.Threading.DispatcherPriority.Loaded);
+        }
 
         private void BuildHelp()
         {
@@ -153,6 +177,8 @@ namespace GameTracker.Views
                 HelpContent.Children.Add(header);
                 HelpContent.Children.Add(panel);
                 current = panel;
+                // Register a deep-link opener: expand this section and scroll it into view.
+                _helpSections[title] = () => { SetOpen(entry, true); header.BringIntoView(); };
             }
 
             void Add(UIElement el)
@@ -272,10 +298,10 @@ namespace GameTracker.Views
             Step(1, "In SSN, open \"Global settings and tools\" (the 🛠 options screen).");
             Img("ssn-settings.png");
             Step(2, "Open \"Experimental Features\" near the top. The two switches you need live HERE — not under Mechanics.");
-            Step(3, "Turn ON \"Enable remote API control of extension\" — this lets Game Tracker send commands, including your send-to-all chat messages.");
+            Step(3, "Turn ON \"Enable remote API control of extension\" — this lets Tequilas' Tavern send commands, including your send-to-all chat messages.");
             Step(4, "Turn ON \"Send chat messages to API server (for external listeners)\" — the key switch that pipes chat into the app; without it, no chat arrives.");
             Img("ssn-api.png");
-            Step(5, "Copy the session ID from your SSN dock URL (the part after session=) into the SSN box in Game Tracker and Connect.");
+            Step(5, "Copy the session ID from your SSN dock URL (the part after session=) into the SSN box in Tequilas' Tavern and Connect.");
             Body("The other SSN screens (Mechanics, etc.) don't affect the connection — you can leave them at their defaults.");
             Img("ssn-mechanics.png");
             Step(6, "Stuck? The \"SSN not showing chat? Setup guide\" link under the SSN box walks through this with more detail.");
@@ -319,12 +345,27 @@ namespace GameTracker.Views
             Step(2, "Type any phrase and ▶ Test to hear it.");
             Step(3, "Name it and Save — it joins the voice list and the random per-chatter pool, marked with a ★.");
 
-            Section("Voice Morph — morph YOUR voice");
+            Section("Voice Morph — build a morphed voice");
             Img("voicemorph.png");
-            Step(1, "Settings → Chat → 🎙 Voice Morph. Pick your mic as Input and choose an Output (headphones to preview; 🔇 None to not hear yourself).");
-            Step(2, "Build a morph: pitch slider (±12 semitones) + an effect, then \"Try it live\" and talk. Name it, set how long it lasts, and Save.");
-            Step(3, "To get the morphed voice on stream: in OBS add an Application Audio Capture source pointed at Game Tracker and mute your raw mic.");
-            Step(4, "Attach saved morphs to point redeems in Features — viewers spend points to change YOUR voice. The overlay shows the morph name with a countdown, and your voice reverts automatically at zero.");
+            Body("The morph runs your microphone through the app in real time and plays the changed voice back out. When no morph is active you sound normal; a redeem (or a click) switches your voice for a set number of seconds, then it reverts on its own.");
+            Step(1, "Settings → 🎙 Voice Morph (left menu). Tick \"Use the app as my audio source (always on)\" — this runs your mic through the app continuously (your normal voice) so OBS can capture it, and it stays live and auto-recovers while the app is open. No VoiceMeeter or virtual cable needed.");
+            Step(2, "Input = your microphone (e.g. \"Microphone (Razer Kiyo)\"). Output = 🎧 System default. (Output is only what YOU hear back — see the OBS section below; OBS captures the morph no matter what Output is set to. Pick 🔇 None if you don't want to hear yourself at all.)");
+            Step(3, "Build a voice with the Voice Mixer: each effect has a bar that rests at neutral — push it right to add that effect (Reverb, Echo, Chorus, Robot, Wobble). Two bars go BOTH ways: Pitch (deeper ↔ higher) and Tone (drag left = warm/mellow, right = grit/bright). Or hit Load on a starter voice (YHWH, Cathedral, Angelic, Skeletor) in YOUR VOICES to drop its bars in, then tweak. Click \"▶ Try it live\" and talk to hear it on your mic, or \"🔊 Test with TTS\" to hear it on a spoken line without touching your mic.");
+            Step(4, "Give it a Name, set Timer (how many seconds it stays on when redeemed), and click \"💾 Save voice\" — saving with an existing name overwrites that voice. Every voice in YOUR VOICES can be attached to a point redeem in the 🪙 Points & Redeems section.");
+
+            Section("Voice Morph → OBS (get it on stream)");
+            Body("This is the part that trips people up. Your morphed voice comes out of Tequilas' Tavern as an application, so OBS must capture the APP — not a microphone. Using the wrong OBS source is the #1 reason the morph never reaches your stream.");
+            Step(1, "In OBS, under Sources click ➕ and choose \"Application Audio Capture (BETA)\" — NOT \"Audio Input Capture\" and NOT \"Audio Output Capture\". Audio Input Capture only grabs a physical mic and will sit silent forever; it's the usual mistake.");
+            Img("obs-1-add-source.png");
+            Step(2, "Create new, name it something like \"Morphed Voice\", and click OK.");
+            Img("obs-2-create-source.png");
+            Step(3, "In its Properties, open the Window dropdown and pick \"[TequilasTavern.exe]: Tequilas' Tavern\". (Tequilas' Tavern must be running for it to appear in the list.) Leave Window Match Priority on its default. Click OK.");
+            Img("obs-3-window.png");
+            Step(4, "Turn a morph on in the app (click ▶ Activate on a saved morph, or ▶ Try it live) and talk. The new \"Morphed Voice\" channel in OBS's Audio Mixer should now bounce. If it moves, you're done.");
+            Step(5, "Mute your raw mic in OBS. Your normal \"Mic/Aux\" source is still live and un-morphed — click its speaker icon to mute it, otherwise viewers hear your real voice on top of the morph. (Only the morphed capture should be unmuted while you're morphing.)");
+            Step(6, "You do NOT need to hear the morph yourself for OBS to get it — Application Audio Capture grabs the app's sound regardless of which Output device you picked or whether it's your default. If you WANT to monitor it, set Output to the headphones you're actually wearing.");
+            Body("Gotchas: (a) Keep a morph active while testing — a redeem/preview auto-reverts after its Timer and then there's nothing distinctive to hear. (b) \"Application Audio Capture (BETA)\" needs Windows 10 (2004+) or Windows 11 and OBS 28 or newer; if it isn't in the source list, that's why — use a free virtual audio cable instead (send the morph Output to the cable and capture it with an Audio Input Capture source). (c) If the meter still won't move, confirm Tequilas' Tavern is the selected Window and that a morph is actually active (the Voice Morph window shows \"morph active\").");
+            Step(7, "Attach saved morphs to point redeems on the 🪙 Points & Redeems page — viewers spend points to change YOUR voice. The overlay shows the morph name with a live countdown, and your voice reverts automatically at zero.");
 
             Section("Appearance — themes");
             Img("settings-appearance.png");
@@ -394,7 +435,7 @@ namespace GameTracker.Views
             Step(1, "In the Discord channel you want announcements in, an admin types: !gh setup updatechannel. The bot posts there whenever a new Tequilas' Tavern version is released. Turn it off with !gh setup updateoff.");
 
             Section("Tavern Tales — the chat RPG (needs the companion bot)");
-            Body("A text RPG your community plays by typing \"tt <command>\" — in Discord and in your stream chat, sharing one character. It runs on TavernTalesBot (the companion Discord bot); Tequilas' Tavern forwards chat commands to it.");
+            Body("A text RPG your community plays by typing \"tt <command>\" — in Discord and in your stream chat, sharing one character. It runs on the Tequilas' Discord bot; Tequilas' Tavern forwards chat commands to it.");
             Step(1, "Set up the bot (see its README) and, in Settings → Chat → ⚙ Features → Discord, paste the Bot ingest URL + token, then tick \"Let chatters play Tavern Tales from chat\".");
             Step(2, "Every command starts with tt. Discord players just start: tt create <class> <race> [name], then tt adventure. Everyone in the channel sees the fights — great for drawing a crowd. Want a fresh start? tt new <class> <race> [name].");
             Step(3, "Stream-chat viewers link first: tt play <their Discord @username> → the bot DMs them a code → they type tt confirm <code> in chat. Now their chat and Discord share the same hero.");
@@ -605,8 +646,12 @@ namespace GameTracker.Views
                 ?? _profiles.FirstOrDefault();
         }
 
-        private void VoiceMorph_Click(object sender, RoutedEventArgs e) =>
-            new VoiceMorphWindow { Owner = this }.ShowDialog();
+        private void VoiceMorph_Click(object sender, RoutedEventArgs e)
+        {
+            var w = new VoiceMorphWindow { Owner = this };
+            w.ShowDialog();
+            if (w.OpenObsHelpRequested) ShowHelpSection(VoiceMorphObsSection);
+        }
 
         private void TtsTest_Click(object sender, RoutedEventArgs e)
         {
@@ -618,9 +663,11 @@ namespace GameTracker.Views
                 profile?.Voice, profile?.Effect ?? "normal", (int)TtsRate.Value, (int)TtsVolume.Value);
         }
 
-        private void Features_Click(object sender, RoutedEventArgs e)
+        private void Features_Click(object sender, RoutedEventArgs e) => OpenFeatures(false);
+
+        private void OpenFeatures(bool pointsTab)
         {
-            var win = new ChatFeaturesWindow { Owner = this };
+            var win = new ChatFeaturesWindow(pointsTab) { Owner = this };
             if (win.ShowDialog() == true)
             {
                 ChatWindow.Current?.ReloadFeatures();
@@ -648,7 +695,7 @@ namespace GameTracker.Views
         {
             if (!int.TryParse(PortBox.Text.Trim(), out int port) || port is < 1 or > 65535)
             {
-                OverlayStatus.Text = "Enter a port between 1 and 65535 (default 3640).";
+                OverlayStatus.Text = "Enter a port between 1 and 65535 (default 3620).";
                 return;
             }
             SettingsService.SaveOverlayPort(port);
@@ -679,18 +726,9 @@ namespace GameTracker.Views
 
         private void CopyTickerEditUrl_Click(object sender, RoutedEventArgs e)
         {
-            if (!OverlayServer.IsRunning)
-            {
-                OverlayStatus.Text = "Overlay server isn't running — can't open the ticker editor.";
-                return;
-            }
             var url = OverlayUrl + "ticker?edit";
-            try
-            {
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-                OverlayStatus.Text = "Opened the ticker editor in your browser — changes save & update OBS live.";
-            }
-            catch { OverlayStatus.Text = "Couldn't open a browser. Go to " + url + " manually."; }
+            try { Clipboard.SetText(url); OverlayStatus.Text = "Copied editor URL — open it in a browser to design the ticker; changes save & update OBS live."; }
+            catch { /* clipboard can be momentarily locked */ }
         }
 
         private static readonly Dictionary<string, (string icon, string label)> TickerSlotDefs = new()
@@ -1016,7 +1054,7 @@ namespace GameTracker.Views
                 BackupStatus.Text = "That file doesn't look like a Tequilas' Tavern backup.";
                 return;
             }
-            if (TavernDialog.Show(this,
+            if (MessageBox.Show(this,
                 "Restore this backup? Your current data is saved to a safety backup first, then the app restarts.",
                 "Import backup", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
 
