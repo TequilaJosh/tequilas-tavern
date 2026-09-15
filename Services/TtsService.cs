@@ -208,7 +208,8 @@ namespace GameTracker.Services
             };
         }
 
-        private readonly record struct Item(string Text, string Voice, string Effect, int Rate, int Volume);
+        private readonly record struct Item(string Text, string Voice, string Effect, int Rate, int Volume,
+                                            Models.MorphPreset? Morph = null);
 
         // The effect palette. Pitch/Rate feed the engine; Dsp is applied to the audio.
         // Pool = included in the shipped defaults (voice picker + per-chatter random pool).
@@ -234,6 +235,11 @@ namespace GameTracker.Services
             new("underwater","underwater",0.95, 0.95, "nw:autowah"),
             new("wobbly",   "wobbly",   1.00, 1.00, "nw:flanger"),
             new("haunted",  "haunted",  0.75, 0.90, "nw:vibrato"),
+            // "Voice of God" family — deep + reverberant space, big cathedral, ethereal choir.
+            new("yhwh",     "yhwh",     0.89, 0.95, "nw:yhwh",      Pool: false),
+            new("cathedral","cathedral",0.82, 0.95, "nw:cathedral", Pool: false),
+            new("angelic",  "angelic",  1.15, 1.02, "nw:angelic",   Pool: false),
+            new("skeletor", "skeletor", 1.41, 1.00, "nw:skeletor",  Pool: false),
         };
 
         private static Effect Find(string? key) =>
@@ -294,6 +300,19 @@ namespace GameTracker.Services
             Pump();
         }
 
+        /// <summary>Speak a line through a live voice-morph preset's exact modulation (pitch +
+        /// mixer effects) — lets the Voice Morph window test a modulation without using the mic.</summary>
+        public void SpeakMorphTest(string text, string? voice, Models.MorphPreset morph, int volume = 100)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return;
+            lock (_gate)
+            {
+                if (_q.Count >= MaxBacklog) return;
+                _q.Enqueue(new Item(text, voice ?? string.Empty, "normal", 0, volume, morph));
+            }
+            Pump();
+        }
+
         private async void Pump()
         {
             Item it;
@@ -311,12 +330,15 @@ namespace GameTracker.Services
                     var v = SpeechSynthesizer.AllVoices.FirstOrDefault(x => x.DisplayName == it.Voice);
                     if (v != null) _synth.Voice = v;
                 }
-                _synth.Options.AudioPitch = Math.Clamp(fx.Pitch, 0.0, 2.0);
-                _synth.Options.SpeakingRate = Math.Clamp(fx.Rate * (1.0 + it.Rate * 0.05), 0.5, 6.0);
+                bool morphMode = it.Morph != null;
+                // In morph-test mode the modulation (incl. pitch) comes from the morph chain,
+                // so synthesize a clean, neutral voice and let the filters do the work.
+                _synth.Options.AudioPitch = morphMode ? 1.0 : Math.Clamp(fx.Pitch, 0.0, 2.0);
+                _synth.Options.SpeakingRate = morphMode ? 1.0 : Math.Clamp(fx.Rate * (1.0 + it.Rate * 0.05), 0.5, 6.0);
                 _synth.Options.AudioVolume = Math.Clamp(it.Volume, 0, 100) / 100.0;
 
                 ISampleProvider sp;
-                var parts = (BleepBadWords && _bleep.Count > 0) ? Segment(it.Text) : null;
+                var parts = (!morphMode && BleepBadWords && _bleep.Count > 0) ? Segment(it.Text) : null;
                 if (parts != null && parts.Any(p => p.beep))
                 {
                     sp = await BuildBleepedAsync(parts);
@@ -329,6 +351,12 @@ namespace GameTracker.Services
                     sp = reader.ToSampleProvider();
                 }
                 int sr = sp.WaveFormat.SampleRate;
+                if (morphMode)
+                {
+                    var filters = VoiceMorphService.BuildFilters(it.Morph!, sr);
+                    if (filters.Length > 0) sp = new NWavesProvider(sp, filters);
+                }
+                else
                 sp = fx.Dsp switch
                 {
                     "robot" => new RingModProvider(sp),
@@ -340,6 +368,22 @@ namespace GameTracker.Services
                     "nw:autowah" => new NWavesProvider(sp, new NWaves.Effects.AutowahEffect(sr)),
                     "nw:flanger" => new NWavesProvider(sp, new NWaves.Effects.FlangerEffect(sr)),
                     "nw:vibrato" => new NWavesProvider(sp, new NWaves.Effects.VibratoEffect(sr)),
+                    // Matches the YHWH mixer default: warm tone + light chorus, reverb and echo.
+                    "nw:yhwh" => new NWavesProvider(sp,
+                        new WetDryFilter(new OnePoleLowpassFilter(sr, 1100f), 0.30f),
+                        new WetDryFilter(new NWaves.Effects.ChorusEffect(sr, new[] { 0.6f, 1.1f }, new[] { 0.002f, 0.0025f }), 0.19f),
+                        new WetDryFilter(new ReverbFilter(sr, roomSize: 0.90f, damp: 0.20f, wet: 0.90f), 0.10f),
+                        new WetDryFilter(new NWaves.Effects.EchoEffect(sr, 0.28f, 0.40f), 0.10f)),
+                    "nw:cathedral" => new NWavesProvider(sp,
+                        new ReverbFilter(sr, roomSize: 0.94f, damp: 0.15f, wet: 0.60f),
+                        new NWaves.Effects.EchoEffect(sr, 0.35f, 0.35f)),
+                    "nw:angelic" => new NWavesProvider(sp,
+                        new NWaves.Effects.ChorusEffect(sr, new[] { 0.8f, 1.2f, 1.6f }, new[] { 0.0025f, 0.003f, 0.0035f }),
+                        new ReverbFilter(sr, roomSize: 0.85f, damp: 0.30f, wet: 0.50f)),
+                    // Skeletor — matches the mixer preset: heavy raspy grit + a strong wobble.
+                    "nw:skeletor" => new NWavesProvider(sp,
+                        new WetDryFilter(new NWaves.Effects.DistortionEffect(NWaves.Effects.DistortionMode.SoftClipping, 22), 0.76f),
+                        new WetDryFilter(new NWaves.Effects.TremoloEffect(sr, 0.7f, 6), 0.69f)),
                     _ => sp,
                 };
 

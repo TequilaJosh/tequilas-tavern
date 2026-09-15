@@ -352,17 +352,19 @@
   }
   #fxvideo.show { display: block; }
 
-  /* Streamer voice-morph countdown pill */
-  #morphpill {
-    position: fixed; left: 50%; bottom: 6%; transform: translateX(-50%);
-    z-index: 7900; pointer-events: none; display: none;
+  /* Streamer voice-morph countdown pill (positionable in the overlay editor) */
+  #morph {
+    position: absolute; z-index: 7900; pointer-events: none; display: none;
+    white-space: nowrap;
     background: linear-gradient(180deg, #1424c0 0%, #0a16a0 100%);
     border: 3px solid #ffffff; border-radius: 999px;
     color: #ffffff; font-weight: 700; font-size: 26px; padding: 10px 26px;
     box-shadow: inset 0 0 0 2px #8090e8, 0 6px 24px rgba(0, 0, 0, 0.6);
   }
-  #morphpill.show { display: block; }
-  #morphpill .mt { color: #f8d878; font-variant-numeric: tabular-nums; margin-left: 10px; }
+  #morph.show { display: inline-block; }
+  #morph .mt { color: #f8d878; font-variant-numeric: tabular-nums; margin-left: 10px; }
+  body.editing #morph { cursor: move; pointer-events: auto; outline: 1px dashed rgba(132, 148, 216, 0.55); }
+  body.editing #morph.sel { outline: 2px solid #8494d8; }
   @keyframes shake {
     0%, 100% { transform: translate(-50%, -50%) scale(var(--sscale)) translate(0, 0); }
     10% { transform: translate(-50%, -50%) scale(var(--sscale)) translate(-9px, 5px); }
@@ -456,12 +458,12 @@
     </section>
 
     <div id="status" class="status"></div>
+    <div id="morph">🎙 <span class="mn"></span><span class="mt"></span></div>
   </div>
 
   <div id="toast"></div>
   <img id="fximg" alt=""/>
   <video id="fxvideo" playsinline></video>
-  <div id="morphpill">🎙 <span class="mn"></span><span class="mt"></span></div>
 
   <div id="editbar">
     <h4>OVERLAY EDITOR</h4>
@@ -1362,10 +1364,11 @@
   // ---- streamer voice-morph countdown pill ----
   let morphTimer = null;
   function showMorph(name, seconds) {
-    const pill = document.getElementById("morphpill");
+    if (EDIT) return;                                // keep the editor's sample pill in place
+    const pill = document.getElementById("morph");
     if (!pill) return;
     if (morphTimer) { clearInterval(morphTimer); morphTimer = null; }
-    if (!name || seconds <= 0) { pill.classList.remove("show"); return; }
+    if (!name || seconds <= 0 || !isOn("morph")) { pill.classList.remove("show"); return; }
     const mn = pill.querySelector(".mn");
     const mt = pill.querySelector(".mt");
     mn.textContent = name;
@@ -1502,10 +1505,10 @@
   // =========================================================================
   //  Layout (per-element position / size / font) + in-browser editor (?edit)
   // =========================================================================
-  const ELEMENTS = ["ch", "chat", "cl", "gl", "poll", "feed", "cnt", "party"];
+  const ELEMENTS = ["ch", "chat", "cl", "gl", "poll", "feed", "cnt", "party", "morph"];
   const ELEMENT_NAMES = { ch: "Challenges", chat: "Live Chat", cl: "Chatters",
                           gl: "Goals", poll: "Poll", feed: "Activity Feed", cnt: "Counters",
-                          party: "Party (Tavern Tales)" };
+                          party: "Party (Tavern Tales)", morph: "Voice Morph timer" };
   const DEFAULT_LAYOUT = {
     ch:   { x: 246, y: 128, w: 294, h: 372, font: "", size: 18, color: "#ffffff", bgo: 100 },
     chat: { x: 548, y: 128, w: 316, h: 372, font: "", size: 24, color: "#ffffff", bgo: 100 },
@@ -1514,7 +1517,8 @@
     poll: { x: 548, y: 512, w: 316, h: 160, font: "", size: 18, color: "#ffffff", bgo: 100 },
     feed: { x: 872, y: 512, w: 200, h: 160, font: "", size: 16, color: "#ffffff", bgo: 100, on: false },
     cnt:  { x: 40,  y: 128, w: 196, h: 200, font: "", size: 20, color: "#ffffff", bgo: 100, on: false },
-    party:{ x: 246, y: 556, w: 788, h: 128, font: "", size: 16, color: "#ffffff", bgo: 0,   on: false }
+    party:{ x: 246, y: 556, w: 788, h: 128, font: "", size: 16, color: "#ffffff", bgo: 0,   on: false },
+    morph:{ x: 520, y: 636, w: 240, h: 48,  font: "", size: 26, color: "#ffffff", bgo: 94 }
   };
   const FONTS = ["", "MR. Saturn", "Segoe UI", "Arial", "Verdana", "Tahoma", "Trebuchet MS",
                  "Georgia", "Times New Roman", "Courier New", "Consolas",
@@ -1562,9 +1566,23 @@
         const el = document.getElementById(k);
         if (el) el.hidden = !isOn(k);
       }
+      // Show the morph pill as a sample so its spot on screen is obvious while editing.
+      const morphEd = document.getElementById("morph");
+      if (morphEd) {
+        if (isOn("morph")) {
+          morphEd.querySelector(".mn").textContent = "YHWH";
+          morphEd.querySelector(".mt").textContent = "2:03";
+          morphEd.classList.add("show");
+        } else {
+          morphEd.classList.remove("show");
+        }
+      }
       syncElemChecks();
       return;
     }
+    // Live: the morph pill only shows while a morph is active (showMorph); if turned off, hide it.
+    const morphLive = document.getElementById("morph");
+    if (morphLive && !isOn("morph")) morphLive.classList.remove("show");
     // Enabled elements are always on screen; only their content changes with state.
     const ch = document.getElementById("ch");
     if (ch) ch.hidden = !isOn("ch");
@@ -1589,6 +1607,12 @@
     const c = layout[k];
     el.style.left = c.x + "px";
     el.style.top = c.y + "px";
+    // The morph pill auto-sizes to its text and keeps its own gradient — position only.
+    if (k === "morph") {
+      el.style.fontSize = (c.size || 26) + "px";
+      el.style.color = c.color || "";
+      return;
+    }
     el.style.width = c.w + "px";
     el.style.height = c.h + "px";
     el.style.fontFamily = c.font ? ("'" + c.font + "', 'Lucida Console', monospace") : "";
@@ -1823,6 +1847,7 @@
       e.preventDefault();
     });
 
+    if (!rz) return;   // the morph pill auto-sizes — drag only, no resize handle
     rz.addEventListener("pointerdown", function (e) {
       selectEl(k);
       const sx = e.clientX, sy = e.clientY, ow = layout[k].w, oh = layout[k].h;

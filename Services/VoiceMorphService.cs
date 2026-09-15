@@ -29,10 +29,10 @@ namespace GameTracker.Services
         private static string _activeName = string.Empty;
 
         // Keep-alive: the mic chain should behave like a permanent microphone, so a watchdog
-        // restarts it whenever the audio path dies (device unplugged, driver restarted, default
-        // device switched, the stream stalls). _desired = the user wants it running; _faulted =
-        // an unexpected stop needs recovery; _lastDataUtc = last time capture delivered a buffer
-        // (silence still counts — WASAPI delivers during silence).
+        // restarts it whenever the audio path dies (device unplugged, VoiceMeeter/driver
+        // restarted, default device switched, the stream stalls). _desired = the user wants
+        // it running; _faulted = an unexpected stop needs recovery; _lastDataUtc = last time
+        // capture delivered a buffer (silence still counts — WASAPI delivers during silence).
         private static volatile bool _desired;
         private static volatile bool _faulted;
         private static DateTime _lastDataUtc = DateTime.MinValue;
@@ -47,14 +47,50 @@ namespace GameTracker.Services
         /// <summary>Sentinel output meaning "process but play nothing back to the streamer".</summary>
         public const string NoneOutput = "(none)";
 
+        /// <summary>One fader in the Voice Mixer. Bidir faders also do something to the LEFT
+        /// (an "opposite" effect); Left/Right name the two directions for the readout.</summary>
+        public sealed record MixBar(string Key, string Label, bool Bidir = false,
+                                    string Left = "", string Right = "");
+
+        /// <summary>The mixer's effect faders, in the order they're shown and processed.</summary>
+        // Order is both the display order and the processing order (tone first, space last).
+        public static readonly MixBar[] MixBars =
+        {
+            new("tone",   "Tone", Bidir: true, Left: "warm", Right: "grit"),
+            new("robot",  "Robot"),
+            new("wobble", "Wobble"),
+            new("chorus", "Chorus (shimmer)"),
+            new("reverb", "Reverb (space)"),
+            new("echo",   "Echo"),
+        };
+
+        // Right-of-centre (positive) effect at full strength; the WetDry wrapper scales it.
+        private static IOnlineFilter? MakeEffect(string key, int sr) => key switch
+        {
+            "reverb" => new ReverbFilter(sr, roomSize: 0.90f, damp: 0.20f, wet: 0.90f),
+            "echo"   => new EchoEffect(sr, 0.28f, 0.40f),
+            "chorus" => new ChorusEffect(sr, new[] { 0.6f, 1.1f }, new[] { 0.002f, 0.0025f }),
+            "tone"   => new DistortionEffect(DistortionMode.SoftClipping, 18),   // grit / bright
+            "robot"  => new RobotEffect(hopSize: 128, fftSize: 512),
+            "wobble" => new TremoloEffect(sr, 0.7f, 6),
+            _        => null,
+        };
+
+        // Left-of-centre (negative) "opposite" effect for bidirectional faders.
+        private static IOnlineFilter? MakeEffectInverse(string key, int sr) => key switch
+        {
+            "tone" => new OnePoleLowpassFilter(sr, 1100f),   // warm / mellow — the opposite of grit
+            _      => null,
+        };
+
         private sealed class Chain
         {
             public PitchShiftVocoderEffect? Pitch;
-            public IOnlineFilter? Fx;
+            public IOnlineFilter[]? Fx;      // effects applied in order (some voices layer several)
             public float Process(float s)
             {
                 if (Pitch != null) s = Pitch.Process(s);
-                if (Fx != null) s = Fx.Process(s);
+                if (Fx != null) foreach (var f in Fx) s = f.Process(s);
                 return s;
             }
         }
@@ -253,24 +289,80 @@ namespace GameTracker.Services
 
         // ---- morph activation ----
 
+        /// <summary>The preset's full effect chain (pitch + effects) as a flat filter list, so a
+        /// TTS preview can run synthesized speech through the exact same modulation.</summary>
+        public static IOnlineFilter[] BuildFilters(MorphPreset p, int sampleRate)
+        {
+            var chain = BuildChain(p, sampleRate);
+            var list = new List<IOnlineFilter>();
+            if (chain.Pitch != null) list.Add(chain.Pitch);
+            if (chain.Fx != null) list.AddRange(chain.Fx);
+            return list.ToArray();
+        }
+
         /// <summary>Build the DSP chain for a preset (shared with previews).</summary>
         private static Chain BuildChain(MorphPreset p, int sampleRate)
         {
             var chain = new Chain();
             if (p.PitchSemitones != 0)
                 chain.Pitch = new PitchShiftVocoderEffect(sampleRate, Math.Pow(2, p.PitchSemitones / 12.0));
-            chain.Fx = (IOnlineFilter?)(p.Effect switch
+
+            // Mixer voices: blend every fader that's off-centre, in a fixed processing order.
+            // Positive = the effect; negative (bidirectional faders only) = its opposite.
+            if (p.Mix != null && p.Mix.Values.Any(v => v != 0))
             {
-                "robot" => new RobotEffect(hopSize: 128, fftSize: 512),
-                "whisper" => new WhisperEffect(hopSize: 128, fftSize: 512),
-                "echo" => new EchoEffect(sampleRate, 0.22f, 0.5f),
-                "distortion" => new DistortionEffect(DistortionMode.SoftClipping, 18),
-                "flanger" => new FlangerEffect(sampleRate),
-                "vibrato" => new VibratoEffect(sampleRate),
-                "tremolo" => new TremoloEffect(sampleRate, 0.7f, 7),
-                "autowah" => new AutowahEffect(sampleRate),
-                _ => (object?)null,
-            });
+                var list = new List<IOnlineFilter>();
+                foreach (var bar in MixBars)
+                {
+                    if (!p.Mix.TryGetValue(bar.Key, out var amt) || amt == 0) continue;
+                    IOnlineFilter? fx = amt > 0
+                        ? MakeEffect(bar.Key, sampleRate)
+                        : (bar.Bidir ? MakeEffectInverse(bar.Key, sampleRate) : null);
+                    if (fx != null)
+                        list.Add(new WetDryFilter(fx, Math.Clamp(Math.Abs(amt), 0, 100) / 100f));
+                }
+                chain.Fx = list.Count > 0 ? list.ToArray() : null;
+                return chain;
+            }
+
+            // Legacy single-effect voices (the Voice Redeems editor and older saved presets).
+            chain.Fx = p.Effect switch
+            {
+                "robot" => new IOnlineFilter[] { new RobotEffect(hopSize: 128, fftSize: 512) },
+                "whisper" => new IOnlineFilter[] { new WhisperEffect(hopSize: 128, fftSize: 512) },
+                "echo" => new IOnlineFilter[] { new EchoEffect(sampleRate, 0.22f, 0.5f) },
+                "distortion" => new IOnlineFilter[] { new DistortionEffect(DistortionMode.SoftClipping, 18) },
+                "flanger" => new IOnlineFilter[] { new FlangerEffect(sampleRate) },
+                "vibrato" => new IOnlineFilter[] { new VibratoEffect(sampleRate) },
+                "tremolo" => new IOnlineFilter[] { new TremoloEffect(sampleRate, 0.7f, 7) },
+                "autowah" => new IOnlineFilter[] { new AutowahEffect(sampleRate) },
+
+                // The "voice of God" family — deep pitch (set via the preset) plus a big
+                // reverberant space, a layered chorus and a booming echo.
+                "yhwh" => new IOnlineFilter[]
+                {
+                    new ChorusEffect(sampleRate, new[] { 0.5f, 0.9f }, new[] { 0.002f, 0.0025f }),
+                    new ReverbFilter(sampleRate, roomSize: 0.90f, damp: 0.20f, wet: 0.55f),
+                    new EchoEffect(sampleRate, 0.25f, 0.3f),
+                },
+                "cathedral" => new IOnlineFilter[]
+                {
+                    new ReverbFilter(sampleRate, roomSize: 0.94f, damp: 0.15f, wet: 0.60f),
+                    new EchoEffect(sampleRate, 0.35f, 0.35f),
+                },
+                "angelic" => new IOnlineFilter[]
+                {
+                    new ChorusEffect(sampleRate, new[] { 0.8f, 1.2f, 1.6f }, new[] { 0.0025f, 0.003f, 0.0035f }),
+                    new ReverbFilter(sampleRate, roomSize: 0.85f, damp: 0.30f, wet: 0.50f),
+                },
+                // Skeletor — matches the mixer preset: heavy raspy grit + a strong wobble.
+                "skeletor" => new IOnlineFilter[]
+                {
+                    new WetDryFilter(new DistortionEffect(DistortionMode.SoftClipping, 22), 0.76f),
+                    new WetDryFilter(new TremoloEffect(sampleRate, 0.7f, 6), 0.69f),
+                },
+                _ => null,
+            };
             return chain;
         }
 
