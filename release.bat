@@ -4,7 +4,7 @@ cd /d "%~dp0"
 
 rem ============================================================
 rem  Cut a release end-to-end:
-rem    1. bump the version in GameTracker.csproj
+rem    1. bump the version in TequilasTavern.csproj
 rem    2. validate the build
 rem    3. commit + push, then tag + push
 rem  GitHub Actions then builds the installer .exe and publishes
@@ -20,9 +20,9 @@ rem ============================================================
 
 rem --- Read current <Version> from the .csproj ---
 set "CURVER="
-for /f "usebackq delims=" %%V in (`powershell -NoProfile -Command "[regex]::Match((Get-Content 'GameTracker.csproj' -Raw),'<Version>(.*?)</Version>').Groups[1].Value"`) do set "CURVER=%%V"
+for /f "usebackq delims=" %%V in (`powershell -NoProfile -Command "[regex]::Match((Get-Content 'TequilasTavern.csproj' -Raw),'<Version>(.*?)</Version>').Groups[1].Value"`) do set "CURVER=%%V"
 if not defined CURVER (
-    echo [X] Could not read ^<Version^> from GameTracker.csproj
+    echo [X] Could not read ^<Version^> from TequilasTavern.csproj
     exit /b 1
 )
 
@@ -92,9 +92,9 @@ echo.
 
 rem --- Write the new version into the .csproj ---
 echo === Bumping version %CURVER% -^> !NEWVER! ===
-powershell -NoProfile -Command "$p='GameTracker.csproj'; $c=[IO.File]::ReadAllText($p); $c=$c -replace '<Version>.*?</Version>','<Version>!NEWVER!</Version>'; $c=$c -replace '<AssemblyVersion>.*?</AssemblyVersion>','<AssemblyVersion>!NEWVER!.0</AssemblyVersion>'; $c=$c -replace '<FileVersion>.*?</FileVersion>','<FileVersion>!NEWVER!.0</FileVersion>'; [IO.File]::WriteAllText($p,$c)"
+powershell -NoProfile -Command "$p='TequilasTavern.csproj'; $c=[IO.File]::ReadAllText($p); $c=$c -replace '<Version>.*?</Version>','<Version>!NEWVER!</Version>'; $c=$c -replace '<AssemblyVersion>.*?</AssemblyVersion>','<AssemblyVersion>!NEWVER!.0</AssemblyVersion>'; $c=$c -replace '<FileVersion>.*?</FileVersion>','<FileVersion>!NEWVER!.0</FileVersion>'; [IO.File]::WriteAllText($p,$c)"
 if errorlevel 1 (
-    echo [X] Failed to update version in GameTracker.csproj
+    echo [X] Failed to update version in TequilasTavern.csproj
     exit /b 1
 )
 
@@ -126,7 +126,7 @@ if errorlevel 1 (
 echo.
 echo === Done ===
 echo Released !TAG!.  GitHub Actions is building the installer .exe and publishing the release.
-echo Watch:    https://github.com/TequilaJosh/iguana-game-hunter/actions
-echo Release:  https://github.com/TequilaJosh/iguana-game-hunter/releases
+echo Watch:    https://github.com/TequilaJosh/tequilas-tavern/actions
+echo Release:  https://github.com/TequilaJosh/tequilas-tavern/releases
 echo.
 endlocal
