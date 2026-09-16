@@ -525,6 +525,17 @@ namespace GameTracker.Views
 
         private void ApplyLive() => ThemeService.Apply(_theme);
 
+        private void OpenThemeArt_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dir = OverlayServer.ThemeArtDir;
+                System.IO.Directory.CreateDirectory(dir);
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dir) { UseShellExecute = true });
+            }
+            catch { /* best-effort */ }
+        }
+
         private static SolidColorBrush Brush(string hex)
         {
             // Map the app's standard text hexes to the live theme so Light mode stays readable.

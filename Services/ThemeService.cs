@@ -45,6 +45,9 @@ namespace GameTracker.Services
             // FF1 look: windows are a flat menu-blue, no scale tile pattern.
             res["ScaleBrush"] = Frozen(baseC);
 
+            // Recolour the OBS overlay to match (and let it load per-theme artwork).
+            try { OverlayServer.SetTheme(Current); } catch { /* overlay optional */ }
+
             if (save) SettingsService.SaveTheme(Current);
         }
 

@@ -86,6 +86,7 @@ namespace GameTracker.Services
         private static JToken? _layout;   // per-element layout (position/size/font), or null = default
         private static JToken? _presets;  // saved layout presets (editor-only)
         private static object? _style;    // chat style: { mode, colors[] }
+        private static object? _theme;    // active app theme colors + slug (styles the overlay)
         private static object? _chatters; // counts + chatters list state
         private static object? _panels;   // custom text-panel overlays (wire form)
         private static object? _goals;    // goal bars (wire form)
@@ -235,6 +236,10 @@ namespace GameTracker.Services
                 else if (method == "GET" && route.StartsWith("/pimg/", StringComparison.Ordinal))
                 {
                     await ServePanelImage(stream, route, ct);
+                }
+                else if (method == "GET" && route.StartsWith("/themeart/", StringComparison.Ordinal))
+                {
+                    await ServeThemeArt(stream, route, ct);
                 }
                 else if (method == "GET" && route.StartsWith("/fxvideo/", StringComparison.Ordinal))
                 {
@@ -438,6 +443,28 @@ namespace GameTracker.Services
                 await stream.FlushAsync(ct);
             }
             catch { /* client aborted / seek */ }
+        }
+
+        // Serves the streamer's per-theme artwork: /themeart/<slug> → ThemeArt/<slug>.<ext>.
+        private static async Task ServeThemeArt(NetworkStream stream, string route, CancellationToken ct)
+        {
+            string? path = null;
+            try
+            {
+                var parts = route.Split('/', StringSplitOptions.RemoveEmptyEntries); // themeart, slug
+                if (parts.Length >= 2)
+                {
+                    var slug = parts[1].Split('?')[0];
+                    slug = ThemeSlug(slug);   // sanitise (no path traversal)
+                    foreach (var ext in new[] { ".png", ".jpg", ".jpeg", ".gif", ".webp" })
+                    {
+                        var candidate = Path.Combine(ThemeArtDir, slug + ext);
+                        if (File.Exists(candidate)) { path = candidate; break; }
+                    }
+                }
+            }
+            catch { }
+            await ServeImageFile(stream, path, ct);
         }
 
         private static async Task ServeImageFile(NetworkStream stream, string? path, CancellationToken ct)
@@ -679,7 +706,7 @@ namespace GameTracker.Services
             lock (Gate) snapshot = new
             {
                 type = "snapshot", state = _state, chat = _chat,
-                layout = _layout, presets = _presets, style = _style, chatters = _chatters,
+                layout = _layout, presets = _presets, style = _style, theme = _theme, chatters = _chatters,
                 panels = _panels, morph = MorphSnapshot(), goals = _goals, counters = _counters, poll = _poll,
                 activity = _activity.ToArray(),
                 activityLatest = new Dictionary<string, object>(_latestByKind),
@@ -841,6 +868,47 @@ namespace GameTracker.Services
             var style = new { mode, colors = (colors ?? Array.Empty<string>()).ToArray() };
             lock (Gate) _style = style;
             Broadcast(new { type = "style", style });
+        }
+
+        // ── App theme → overlay ────────────────────────────────────────────────
+        /// <summary>Folder where the streamer drops per-theme artwork (one image per theme,
+        /// named after the theme's slug, e.g. "kingdom-hearts.png").</summary>
+        public static string ThemeArtDir => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "Tequilas Tavern", "ThemeArt");
+
+        /// <summary>A theme name → filename-safe slug, e.g. "Kingdom Hearts" → "kingdom-hearts".</summary>
+        public static string ThemeSlug(string? name)
+        {
+            var s = (name ?? "").Trim().ToLowerInvariant();
+            var sb = new StringBuilder();
+            foreach (var ch in s)
+                sb.Append(char.IsLetterOrDigit(ch) ? ch : '-');
+            var slug = sb.ToString();
+            while (slug.Contains("--")) slug = slug.Replace("--", "-");
+            return slug.Trim('-');
+        }
+
+        /// <summary>Push the active app theme (colors + slug) so the overlay recolours to match
+        /// and can load the matching per-theme artwork.</summary>
+        public static void SetTheme(Models.ThemeSettings t)
+        {
+            if (t == null) return;
+            var theme = new
+            {
+                slug = ThemeSlug(t.PresetName),
+                name = t.PresetName,
+                accent = t.Accent,
+                accentDeep = t.AccentDeep,
+                accent2 = t.Accent2,
+                bg = t.BgBase,
+                tile = t.BgTile,
+                text = t.Text,
+                textDim = t.TextDim,
+                textFaint = t.TextFaint,
+            };
+            lock (Gate) _theme = theme;
+            if (_running) Broadcast(new { type = "theme", theme });
         }
 
         /// <summary>Push chatter counts + the active chatters list to all clients.</summary>

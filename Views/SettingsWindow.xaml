@@ -200,6 +200,12 @@
                             <StackPanel x:Name="CustomColors"/>
                             <Button Content="&#8635; Reset to default (Reptile)" Click="ResetTheme_Click"
                                     Style="{StaticResource Btn}" HorizontalAlignment="Left" Margin="0,4,0,0"/>
+
+                            <TextBlock Text="OVERLAY THEME ART" Style="{StaticResource SecHdr}"/>
+                            <TextBlock Foreground="{DynamicResource ThemeTextFaint}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"
+                                       Text="Drop a PNG (or JPG/GIF) into the ThemeArt folder, named after the theme, to show it on your OBS overlay when that theme is active. Add the 'Theme Art' element in the overlay editor and drag it where you like. Filenames: kingdom-hearts.png, legend-of-zelda.png, mario.png, dark.png, light.png, warrior-of-light.png, reptile.png, amber.png, ocean.png, royal.png, crimson.png, mono.png"/>
+                            <Button Content="&#128193; Open ThemeArt folder" Click="OpenThemeArt_Click"
+                                    Style="{StaticResource Btn}" HorizontalAlignment="Left"/>
                         </StackPanel>
                     </ScrollViewer>
 

@@ -97,6 +97,41 @@
 ================================================================================
 -->
 <style>
+  /* Theme variables — defaults match the app's blue theme; applyTheme() overrides them
+     live from the active app theme (Kingdom Hearts, Zelda, Mario, Light, etc.). */
+  :root {
+    --accent: #9fb4ff;
+    --accent-deep: #3a50d8;
+    --accent2: #f8d878;
+    --bg: #080e34;
+    --tile: #16226e;
+    --surface: #101a4e;
+    --surface2: #1a2a6e;
+    --border: #2438a0;
+    --text: #ffffff;
+    --text-dim: #8494d8;
+    --text-faint: #6f7cb5;
+    --box-grad-a: #1a2a6e;   /* box gradient top (surface2) */
+    --box-grad-b: #080e34;   /* box gradient bottom (bg) */
+    --box-edge: #9fb4ff;     /* box border (accent) */
+    --box-glow: #3a50d8;     /* inner glow (accentDeep) */
+  }
+
+  /* Per-theme artwork the streamer drops in (positionable in the overlay editor). */
+  #themeart {
+    position: absolute; display: none; z-index: 60; pointer-events: none;
+    overflow: hidden;
+  }
+  #themeart.show { display: block; }
+  #themeart img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  body.editing #themeart { cursor: move; pointer-events: auto; outline: 1px dashed rgba(159, 180, 255, 0.55); }
+  body.editing #themeart.sel { outline: 2px solid var(--accent); }
+  #themeart .themeart-empty {
+    position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+    text-align: center; font-size: 12px; color: var(--text-faint); padding: 6px;
+  }
+  body.editing #themeart .themeart-empty { display: flex; }
+
   /* ---- Optional web font stub: if you add one, keep font-display:block ----
   @font-face {
     font-family: 'OverlayFont';
@@ -135,11 +170,11 @@
   .box {
     position: absolute; box-sizing: border-box;
     display: flex; flex-direction: column; overflow: hidden;
-    background: linear-gradient(180deg, #1424c0 0%, #0a16a0 100%);   /* opaque default */
-    border: 3px solid #ffffff; border-radius: 8px;
-    box-shadow: inset 0 0 0 2px #8090e8, 0 6px 22px rgba(0, 0, 0, 0.55);
+    background: linear-gradient(180deg, var(--box-grad-a) 0%, var(--box-grad-b) 100%);   /* opaque default */
+    border: 3px solid var(--box-edge); border-radius: 8px;
+    box-shadow: inset 0 0 0 2px var(--box-glow), 0 6px 22px rgba(0, 0, 0, 0.55);
     padding: 12px 16px;
-    color: #ffffff;
+    color: var(--text);
     font-size: 22px;                 /* per-element size from the layout; inner text uses em */
     transform: translateZ(0);
   }
@@ -168,7 +203,7 @@
                text-align: center; padding: 8px; font-size: 13px; color: #8494d8; }
   body.editing #party .partyHint { display: flex; }
   body.editing .box { cursor: move; outline: 1px dashed rgba(159, 180, 255, 0.55); }
-  body.editing .box.sel { outline: 2px solid #9fb4ff; }
+  body.editing .box.sel { outline: 2px solid var(--accent); }
   .rz {
     display: none; position: absolute; right: -7px; bottom: -7px;
     width: 15px; height: 15px; border-radius: 3px;
@@ -177,39 +212,39 @@
   body.editing .rz { display: block; }
   #editbar {
     display: none; position: fixed; left: 12px; top: 12px; z-index: 10000; width: 250px;
-    background: linear-gradient(180deg, #1424c0 0%, #0a16a0 100%);
-    border: 3px solid #ffffff; border-radius: 8px;
-    padding: 10px 12px; color: #ffffff;
+    background: linear-gradient(180deg, var(--box-grad-a) 0%, var(--box-grad-b) 100%);
+    border: 3px solid var(--box-edge); border-radius: 8px;
+    padding: 10px 12px; color: var(--text);
     font-family: 'Lucida Console', Consolas, monospace; font-size: 13px;
-    box-shadow: inset 0 0 0 2px #8090e8, 0 4px 18px rgba(0, 0, 0, 0.6);
+    box-shadow: inset 0 0 0 2px var(--box-glow), 0 4px 18px rgba(0, 0, 0, 0.6);
   }
   body.editing #editbar { display: block; }
-  #editbar h4 { margin: 0 0 6px; color: #f8d878; font-size: 12px; letter-spacing: 1px; }
-  #editbar #ebSel { color: #f8d878; font-weight: 700; margin-bottom: 4px; }
+  #editbar h4 { margin: 0 0 6px; color: var(--accent2); font-size: 12px; letter-spacing: 1px; }
+  #editbar #ebSel { color: var(--accent2); font-weight: 700; margin-bottom: 4px; }
   #editbar label { display: block; margin: 7px 0 2px; color: #8494d8; font-size: 11px; }
   #editbar select, #editbar input[type=number] {
-    width: 100%; box-sizing: border-box; background: #101a4e; color: #ffffff;
-    border: 1px solid #2438a0; border-radius: 4px; padding: 4px 6px; font-size: 13px;
+    width: 100%; box-sizing: border-box; background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); border-radius: 4px; padding: 4px 6px; font-size: 13px;
   }
   #editbar input[type=color] {
-    width: 100%; height: 26px; background: #101a4e; border: 1px solid #2438a0; border-radius: 4px;
+    width: 100%; height: 26px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
   }
   #editbar .hint { color: #8494d8; font-size: 11px; margin-top: 8px; line-height: 1.4; }
   #editbar .savemark { color: #9fb4ff; font-size: 11px; height: 13px; margin-top: 5px; }
   #editbar button {
-    background: #1a2a6e; color: #9fb4ff; border: 1px solid #2438a0; border-radius: 4px;
+    background: #1a2a6e; color: #9fb4ff; border: 1px solid var(--border); border-radius: 4px;
     padding: 4px 9px; font-size: 12px; cursor: pointer; font-family: 'Segoe UI', sans-serif;
   }
   #editbar button:hover { background: #2438a0; color: #080e34; }
   #editbar input[type=text] {
-    background: #101a4e; color: #ffffff; border: 1px solid #2438a0; border-radius: 4px;
+    background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 4px;
     padding: 4px 6px; font-size: 12px; box-sizing: border-box;
   }
   #editbar .ebsplit { border-top: 1px solid #2438a0; margin-top: 10px; padding-top: 8px; }
   #editbar #ebElems .ebElemRow { display: flex; align-items: center; gap: 6px; margin: 4px 0; }
   #editbar #ebElems label {
     display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0;
-    color: #ffffff; font-size: 12px; cursor: pointer;
+    color: var(--text); font-size: 12px; cursor: pointer;
   }
   #editbar #ebElems .ebElemRst { padding: 1px 7px; flex: 0 0 auto; }
   #editbar #ebElems input { accent-color: #9fb4ff; }
@@ -218,14 +253,14 @@
   #editbar #ebPresetList { margin: 6px 0; }
   #editbar #ebPresetList .p { display: flex; align-items: center; gap: 5px; margin: 4px 0; }
   #editbar #ebPresetList .p .nm {
-    flex: 1 1 auto; min-width: 0; color: #ffffff; font-size: 12px;
+    flex: 1 1 auto; min-width: 0; color: var(--text); font-size: 12px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   #editbar #ebPresetList .p button { padding: 2px 7px; }
   #editbar #ebReset { width: 100%; margin-top: 4px; }
 
   .hd {
-    color: #f8d878; font-size: 0.55em; font-weight: 700; letter-spacing: 1px;
+    color: var(--accent2); font-size: 0.55em; font-weight: 700; letter-spacing: 1px;
     text-transform: uppercase; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
     margin-bottom: 0.35em; display: flex; align-items: center; gap: 0.3em; flex: 0 0 auto;
   }
@@ -280,7 +315,7 @@
   .badge-img { height: 1em; vertical-align: middle; margin-right: 0.28em; }
   .sym { margin-right: 0.3em; font-weight: bold; }
   .user { font-weight: 700; margin-right: 0.25em; }
-  .msg { color: #ffffff; word-break: break-word; }
+  .msg { color: var(--text); word-break: break-word; }
   .emote { height: 1.2em; vertical-align: middle; margin: 0 1px; }
   .gif { display: block; max-width: 220px; max-height: 140px; border-radius: 6px; margin: 3px 0; }
 
@@ -314,25 +349,25 @@
   .bar-label .val { color: #8494d8; font-weight: 600; }
   .bar-track {
     height: 0.75em; border-radius: 0.4em; overflow: hidden;
-    background: rgba(0, 0, 0, 0.45); border: 1px solid #2438a0;
+    background: rgba(0, 0, 0, 0.45); border: 1px solid var(--border);
   }
   .bar-fill {
     height: 100%; border-radius: 0.4em 0 0 0.4em;
     transition: width 0.45s ease;
   }
   .poll-q { font-size: 0.82em; font-weight: 700; margin: 0.1em 0 0.3em; word-break: break-word; }
-  .poll-num { color: #f8d878; font-weight: 700; margin-right: 0.3em; }
-  #pollState { margin-left: auto; color: #f8d878; font-weight: 700; font-size: 0.85em; }
+  .poll-num { color: var(--accent2); font-weight: 700; margin-right: 0.3em; }
+  #pollState { margin-left: auto; color: var(--accent2); font-weight: 700; font-size: 0.85em; }
 
   /* Big toast */
   #toast {
     position: fixed; left: 50%; top: 18%; transform: translateX(-50%) scale(0.8);
     max-width: 84vw; text-align: center; z-index: 8000; pointer-events: none;
-    background: linear-gradient(180deg, #1424c0 0%, #0a16a0 100%);
-    border: 3px solid #ffffff; border-radius: 12px;
-    color: #ffffff; font-weight: 800; font-size: 44px; line-height: 1.25;
+    background: linear-gradient(180deg, var(--box-grad-a) 0%, var(--box-grad-b) 100%);
+    border: 3px solid var(--box-edge); border-radius: 12px;
+    color: var(--text); font-weight: 800; font-size: 44px; line-height: 1.25;
     padding: 18px 34px;
-    box-shadow: inset 0 0 0 2px #8090e8, 0 10px 40px rgba(0, 0, 0, 0.7);
+    box-shadow: inset 0 0 0 2px var(--box-glow), 0 10px 40px rgba(0, 0, 0, 0.7);
     opacity: 0; transition: opacity 0.25s ease, transform 0.25s ease;
   }
   #toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
@@ -356,13 +391,13 @@
   #morph {
     position: absolute; z-index: 7900; pointer-events: none; display: none;
     white-space: nowrap;
-    background: linear-gradient(180deg, #1424c0 0%, #0a16a0 100%);
-    border: 3px solid #ffffff; border-radius: 999px;
-    color: #ffffff; font-weight: 700; font-size: 26px; padding: 10px 26px;
-    box-shadow: inset 0 0 0 2px #8090e8, 0 6px 24px rgba(0, 0, 0, 0.6);
+    background: linear-gradient(180deg, var(--box-grad-a) 0%, var(--box-grad-b) 100%);
+    border: 3px solid var(--box-edge); border-radius: 999px;
+    color: var(--text); font-weight: 700; font-size: 26px; padding: 10px 26px;
+    box-shadow: inset 0 0 0 2px var(--box-glow), 0 6px 24px rgba(0, 0, 0, 0.6);
   }
   #morph.show { display: inline-block; }
-  #morph .mt { color: #f8d878; font-variant-numeric: tabular-nums; margin-left: 10px; }
+  #morph .mt { color: var(--accent2); font-variant-numeric: tabular-nums; margin-left: 10px; }
   body.editing #morph { cursor: move; pointer-events: auto; outline: 1px dashed rgba(132, 148, 216, 0.55); }
   body.editing #morph.sel { outline: 2px solid #8494d8; }
   @keyframes shake {
@@ -402,7 +437,7 @@
     z-index: 9999;
   }
   #debug.show { display: block; }
-  #debug .dh { color: #f8d878; font-weight: 700; margin-bottom: 6px; }
+  #debug .dh { color: var(--accent2); font-weight: 700; margin-bottom: 6px; }
   #debug .err { color: #ff8a6a; }
 </style>
 </head>
@@ -459,6 +494,7 @@
 
     <div id="status" class="status"></div>
     <div id="morph">🎙 <span class="mn"></span><span class="mt"></span></div>
+    <div id="themeart"><img alt=""/><div class="themeart-empty">Theme Art — drop an image in the ThemeArt folder</div><div class="rz" data-el="themeart"></div></div>
   </div>
 
   <div id="toast"></div>
@@ -773,6 +809,7 @@
         clearChat();
         if (data.layout) applyLayout(data.layout);
         if (Array.isArray(data.presets)) { presets = data.presets; if (EDIT) renderPresets(); }
+        if (data.theme) applyTheme(data.theme);
         if (data.style) applyStyle(data.style);
         if (data.chatters) renderChatters(data.chatters);
         if (data.morph) showMorph(data.morph.name, data.morph.seconds);
@@ -822,6 +859,9 @@
         break;
       case "morph":
         showMorph(data.name, data.seconds);
+        break;
+      case "theme":
+        applyTheme(data.theme);
         break;
       case "chat":
         if (Array.isArray(data.messages)) {
@@ -1505,10 +1545,11 @@
   // =========================================================================
   //  Layout (per-element position / size / font) + in-browser editor (?edit)
   // =========================================================================
-  const ELEMENTS = ["ch", "chat", "cl", "gl", "poll", "feed", "cnt", "party", "morph"];
+  const ELEMENTS = ["ch", "chat", "cl", "gl", "poll", "feed", "cnt", "party", "morph", "themeart"];
   const ELEMENT_NAMES = { ch: "Challenges", chat: "Live Chat", cl: "Chatters",
                           gl: "Goals", poll: "Poll", feed: "Activity Feed", cnt: "Counters",
-                          party: "Party (Tavern Tales)", morph: "Voice Morph timer" };
+                          party: "Party (Tavern Tales)", morph: "Voice Morph timer",
+                          themeart: "Theme Art" };
   const DEFAULT_LAYOUT = {
     ch:   { x: 246, y: 128, w: 294, h: 372, font: "", size: 18, color: "#ffffff", bgo: 100 },
     chat: { x: 548, y: 128, w: 316, h: 372, font: "", size: 24, color: "#ffffff", bgo: 100 },
@@ -1518,7 +1559,8 @@
     feed: { x: 872, y: 512, w: 200, h: 160, font: "", size: 16, color: "#ffffff", bgo: 100, on: false },
     cnt:  { x: 40,  y: 128, w: 196, h: 200, font: "", size: 20, color: "#ffffff", bgo: 100, on: false },
     party:{ x: 246, y: 556, w: 788, h: 128, font: "", size: 16, color: "#ffffff", bgo: 0,   on: false },
-    morph:{ x: 520, y: 636, w: 240, h: 48,  font: "", size: 26, color: "#ffffff", bgo: 94 }
+    morph:{ x: 520, y: 636, w: 240, h: 48,  font: "", size: 26, color: "#ffffff", bgo: 94 },
+    themeart:{ x: 1048, y: 470, w: 210, h: 210, font: "", size: 16, color: "#ffffff", bgo: 0, on: false }
   };
   const FONTS = ["", "MR. Saturn", "Segoe UI", "Arial", "Verdana", "Tahoma", "Trebuchet MS",
                  "Georgia", "Times New Roman", "Courier New", "Consolas",
@@ -1577,12 +1619,18 @@
           morphEd.classList.remove("show");
         }
       }
+      // Theme-art box is always shown while editing (its placeholder marks the spot).
+      const artEd = document.getElementById("themeart");
+      if (artEd) artEd.classList.toggle("show", isOn("themeart"));
       syncElemChecks();
       return;
     }
     // Live: the morph pill only shows while a morph is active (showMorph); if turned off, hide it.
     const morphLive = document.getElementById("morph");
     if (morphLive && !isOn("morph")) morphLive.classList.remove("show");
+    // Theme art shows only if enabled and its image loaded.
+    const artLive = document.getElementById("themeart");
+    if (artLive) { if (!isOn("themeart")) artLive.classList.remove("show"); else setThemeArt(themeSlug); }
     // Enabled elements are always on screen; only their content changes with state.
     const ch = document.getElementById("ch");
     if (ch) ch.hidden = !isOn("ch");
@@ -1601,6 +1649,58 @@
     lastStateSig = "";   // let the next state frame re-fill content
   }
 
+  // ---- theme (colours + per-theme art) ----
+  // Box gradient RGB (surface2 → bg); defaults match the blue theme.
+  let TH = { gradA: "26, 42, 110", gradB: "8, 14, 52" };
+  let themeSlug = "";
+
+  function hexToRgb(hex) {
+    try {
+      const h = (hex || "").replace("#", "");
+      const n = parseInt(h.length === 3 ? h.split("").map(c => c + c).join("") : h, 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    } catch (e) { return [0, 0, 0]; }
+  }
+  function mixHex(a, b, f) {
+    const A = hexToRgb(a), B = hexToRgb(b);
+    const ch = i => Math.max(0, Math.min(255, Math.round(A[i] + (B[i] - A[i]) * f)));
+    return "#" + [ch(0), ch(1), ch(2)].map(x => x.toString(16).padStart(2, "0")).join("");
+  }
+
+  function applyTheme(t) {
+    if (!t) return;
+    const r = document.documentElement.style;
+    const set = (k, v) => { if (v) r.setProperty(k, v); };
+    set("--accent", t.accent); set("--accent-deep", t.accentDeep); set("--accent2", t.accent2);
+    set("--bg", t.bg); set("--tile", t.tile);
+    set("--text", t.text); set("--text-dim", t.textDim); set("--text-faint", t.textFaint);
+    if (t.bg && t.tile) {
+      const surface2 = mixHex(t.bg, t.tile, 1.6);
+      set("--surface", mixHex(t.bg, t.tile, 0.6));
+      set("--surface2", surface2);
+      set("--border", mixHex(t.bg, t.tile, 2.6));
+      set("--box-grad-a", surface2);
+      set("--box-grad-b", t.bg);
+      TH.gradA = hexToRgb(surface2).join(", ");
+      TH.gradB = hexToRgb(t.bg).join(", ");
+    }
+    set("--box-edge", t.accent);
+    set("--box-glow", t.accentDeep);
+    for (const k of ELEMENTS) applyBox(k);   // box fills are inline with the theme RGB
+    if (t.slug !== undefined) setThemeArt(t.slug);
+  }
+
+  function setThemeArt(slug) {
+    themeSlug = slug || "";
+    const wrap = document.getElementById("themeart");
+    if (!wrap) return;
+    const img = wrap.querySelector("img");
+    if (!themeSlug || !isOn("themeart")) { if (!EDIT) wrap.classList.remove("show"); return; }
+    img.onload = function () { wrap.classList.add("show"); };
+    img.onerror = function () { if (!EDIT) wrap.classList.remove("show"); };
+    img.src = "/themeart/" + encodeURIComponent(themeSlug) + "?v=" + Date.now();
+  }
+
   function applyBox(k) {
     const el = document.getElementById(k);
     if (!el) return;
@@ -1613,15 +1713,21 @@
       el.style.color = c.color || "";
       return;
     }
+    // Theme-art image — position + size only (no panel fill).
+    if (k === "themeart") {
+      el.style.width = c.w + "px";
+      el.style.height = c.h + "px";
+      return;
+    }
     el.style.width = c.w + "px";
     el.style.height = c.h + "px";
     el.style.fontFamily = c.font ? ("'" + c.font + "', 'Lucida Console', monospace") : "";
     el.style.fontSize = (c.size || 22) + "px";
     el.style.color = c.color || "";
-    // FF1 royal-blue menu fill; background opacity 0–100 (missing = fully opaque).
+    // Themed menu fill (from the active theme's surface→bg); opacity 0–100.
     const bgo = (typeof c.bgo === "number" ? Math.max(0, Math.min(100, c.bgo)) : 100) / 100;
-    el.style.background = "linear-gradient(180deg, rgba(20, 36, 192, " + bgo +
-                          ") 0%, rgba(10, 22, 160, " + bgo + ") 100%)";
+    el.style.background = "linear-gradient(180deg, rgba(" + TH.gradA + ", " + bgo +
+                          ") 0%, rgba(" + TH.gradB + ", " + bgo + ") 100%)";
   }
 
   // ---- editor ----
